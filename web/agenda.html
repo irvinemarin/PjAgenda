@@ -1,0 +1,406 @@
+<!--
+Copyright 2018 Google LLC
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    https://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!-- [START calendar_quickstart] -->
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Calendario Poder Judicial</title>
+        <meta charset="utf-8" />
+        <link href='lib/fullcalendar/core/main.css' rel='stylesheet' />
+        <link href='lib/fullcalendar/daygrid/main.css' rel='stylesheet' />
+        <link rel="stylesheet" href="lib/fullcalendar/list/main.css">
+        <link href='css/style.css' rel="stylesheet" />
+        <link rel="stylesheet" href="css/styleModal.css">
+        <!--<link rel="stylesheet" href="bootstrap/css/bootstrap.css">-->
+        <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+
+        <link rel="stylesheet" href="lib/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css">
+        <link rel="stylesheet" href="lib/timepicker/bootstrap-timepicker.min.css">
+        <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="lib/select-mulitple/dist/slimselect.css">
+        <link rel="stylesheet" href="lib/sweetalert/dist/sweetalert2.css">
+        <script src="lib/fullcalendar/core/main.js" type="text/javascript"></script>
+        <script src='lib/fullcalendar/core/main.js'></script>
+        <script src="lib/fullcalendar/interaction/main.js"></script>
+        <script src='lib/fullcalendar/daygrid/main.js'></script>
+        <script src="lib/fullcalendar/list/main.js"></script>
+        <script src="lib/fullcalendar/google-calendar/main.js"></script>
+
+        <!--<script src="bootstrap/js/jquery-3.2.1.min.js"></script>
+        <script src="bootstrap/js/bootstrap.js"></script>-->
+        <script src="lib/bootstrap/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+                integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+        <script src="lib/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+
+        <script src="lib/bootstrap-datepicker/dist/js/bootstrap-datepicker.js"></script>
+        <script src="lib/timepicker/bootstrap-timepicker.min.js"></script>
+        <script src="lib/select-mulitple/dist/slimselect.js"></script>
+        <script src="lib/moment/moment.js"></script>
+        <script src="lib/sweetalert/dist/sweetalert2.min.js"></script>
+
+        <style>
+            .w1OTme {
+                display: inline;
+                background-color: #1a73e8;
+                color: #fff;
+                padding: 8px 16px;
+                -webkit-border-radius: 4px;
+                border-radius: 4px;
+                line-height: 38px;
+                font-family: 'Google Sans', Roboto, Arial, sans-serif;
+                font-weight: 500;
+            }
+
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            .bg-dark {
+                background-color: #441414 !important;
+            }
+        </style>
+
+    </head>
+</head>
+
+
+<body>
+
+    <header class="">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <!-- Navbar content -->
+            <a class="navbar-brand" href="#">PJ Agendas</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Inicio <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    </li>
+                </ul>
+                <div class="nav-item dropdown">
+                    <a  id="txtUsername" class="nav-link dropdown-toggle text-white" style="margin-right: 20px;" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Usuario01
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">opcion 0</a>
+                        <a class="dropdown-item" href="#">opcion 1</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item"  href="#">Salir</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="progress" style="height: 5px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;"></div>
+        </div>
+    </header>
+
+
+
+    <main>
+
+        <div class="row card-body"> 
+            <div class="col-sm-2" >
+                <p class="" id="txtUserGmail"> @gmail.com</p> 
+                <button class="btn btn-success" id="authorize_button" style="display: none;">Iniciar Calendario Google</button>
+                <button class="btn btn-success" id="signout_button" style="display: none;">Salir de Calendario Google</button>
+                <br>
+                <p class="" id="msjGmail">Para ver y reazliar acciones en GoogleCalendar y GoogleMeets es necesario Iniciar sesion en su cuenta de Google</p> 
+                <p class="" id="msjGmail2">Si no se muestra ninguna reunión Pendiente, verifique que su calendario sea publico en su cuenta de Google</p> 
+                <p class="" id="msjGmail3"></p> 
+
+            </div>
+
+
+            <div class="col-sm-8" >
+
+                <div class="">
+                    <br>
+                    <!--Add buttons to initiate auth sequence and sign out-->
+                    <h4>Reunión para hoy <span id="txtDateCurrent"></span></h4>   
+                    <button id="saveEvent_button" class="btn btn-success " data-toggle="modal" data-target="#exampleModalCenter">Agregar Nueva Reunion</button>
+                    <br>
+                    <script>
+                        var f = new Date();
+                        document.getElementById("txtDateCurrent").innerHTML = f.getDate() + "/" + (f.getMonth() + 1) + "/" + f.getFullYear();
+                    </script>
+
+                    <br>
+                    <pre id="content" style="white-space: pre-wrap;"></pre>
+
+
+                    <pre style="white-space: pre-wrap;"></pre>
+                    <div id='calendar' style="margin: 0;"></div>
+
+
+
+                </div>  
+
+
+            </div>
+        </div> 
+
+
+
+
+
+
+    </main>   
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Modal Insert-->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">CREAR EVENTO</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" class="form-control" id="text-Titulo" placeholder="Añade un Título">
+                            <div class="invalid-feedback">
+                                Ingrese título al evento.
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label>Fecha Inicio</label>
+                                <input type="text" class="form-control datepicker" id="text-fechaI" data-date-format="dd/mm/yyyy">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Hora Inicio</label>
+                                <input type="text" class="form-control timepicker" id="text-horaI">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Hora Fin</label>
+                                <input type="text" class="form-control timepicker" id="text-horaF">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Invitados</label>
+                            <select id="text-invitados" multiple>
+                                <option value="lpage@example.com">lpage@example.com</option>
+                                <option value="sbrin@example.com">sbrin@example.com</option>
+                                <option value="prueba@example.com">prueba@example.com</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Ingrese invitados al evento.
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <textarea class="form-control" id="text-descripcion" placeholder="Añade una descripción"
+                                      style="resize: none;"></textarea>
+                            <div class="invalid-feedback">
+                                Ingrese descripción al evento.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="EventSaveCalendarApi();">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Insert-->
+
+    <!-- Modal ver detalles-->
+    <div class="modal fade" id="Modaldetalle" tabindex="-1" role="dialog" aria-labelledby="ModaldetalleCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModaldetalleLongTitle">DETALLE EVENTO</h5>
+                    <div style="text-align: right;" id="btn-option-head_title">
+                        <button data-id="" class="btn btn-outline-primary btn-sm btnEditEventoCalendarApi"><i
+                                class="fa fa-pencil"></i></button>
+                        <button data-id="" class="btn btn-outline-danger btn-sm btnDeleteEventoCalendarApi"><i
+                                class="fa fa-trash-o"></i></button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <!--EVENTO PARTE TITLE-->
+                    <div class="container-title">
+                        <div class="container-icon">
+                            <span>
+                                <i class="fa fa-calendar" style="font-size: 25px;"></i>
+                            </span>
+                        </div>
+                        <div class="container-textDescription" style="height: 50px;">
+                            <h5 id="title_event"></h5>
+                        </div>
+                        <div class="container-icon">
+                        </div>
+                        <div class="container-SubtextDescription" style=" height: 60px;">
+                            <span id="date_time_descripton"></span>
+                        </div>
+                    </div>
+
+                    <!--EVENTO PARTE GOOGLE MEET-->
+                    <div class="container-title">
+                        <div class="container-icon">
+                            <span>
+                                <i class="fa fa-camera" style="font-size: 25px;"></i>
+                            </span>
+                        </div>
+                        <div class="container-textDescription">
+                            <a id="btn_url-meet" href="" target="_blank" rel="noreferrer noopener" class="w1OTme"
+                               jsaction="click:I3d3Rd" jslog="41732; track:impression,click">Unirse con Google Meet</a>
+                        </div>
+                        <div class="container-icon">
+                        </div>
+                        <div class="container-SubtextDescription" style=" height: 60px;">
+                            <p id="utl_meet"></p>
+                        </div>
+                    </div>
+
+                    <!--EVENTO PARTE INVITADOS-->
+                    <div class="container-title">
+                        <div class="container-icon">
+                            <span>
+                                <i class="fa fa-users" style="font-size: 25px;"></i>
+                            </span>
+                        </div>
+                        <div class="container-textDescription" style="height:38px;">
+                            <span>Invitados:</span>
+                        </div>
+                        <div id="div_email_coustomer">
+                        </div>
+                    </div>
+                    <div class="spacing-email"></div>
+
+                    <!-- EVENTO PARTE DETALLE EVENT-->
+                    <div class="container-title">
+                        <div class="container-icon">
+                            <span>
+                                <i class="fa fa-align-left" style="font-size: 25px;"></i>
+                            </span>
+                        </div>
+                        <div class="container-textDescription">
+                            <span id="description_event"></span>
+                        </div>
+                    </div>
+                    <div class="spacing-email"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal ver detalles-->
+
+    <!-- Modal Update-->
+    <div class="modal fade" id="ModalUpdate" tabindex="-1" role="dialog" aria-labelledby="ModalUpdateCenterTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalUpdateLongTitle">ACTUALIZAR EVENTO</h5>
+                    <input type="hidden" class="form-control" id="text-eventid">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" class="form-control" id="text-Titulo2" placeholder="Añade un Título">
+                            <div class="invalid-feedback">
+                                Ingrese título al evento.
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label>Fecha Inicio</label>
+                                <input type="text" class="form-control datepicker" id="text-fechaI2" data-date-format="dd/mm/yyyy">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Hora Inicio</label>
+                                <input type="text" class="form-control timepicker" id="text-horaI2">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label>Hora Fin</label>
+                                <input type="text" class="form-control timepicker" id="text-horaF2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Invitados</label>
+                            <select id="text-invitados2" multiple>
+                            </select>
+                            <div class="invalid-feedback">
+                                Ingrese invitados al evento.
+                            </div>
+                            <div class="form-group">
+                                <label>Descripción</label>
+                                <textarea class="form-control" id="text-descripcion2" placeholder="Añade una descripción"
+                                          style="resize: none;"></textarea>
+                                <div class="invalid-feedback">
+                                    Ingrese descripción al evento.
+                                </div>
+                            </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="EventUpateCalendarApi();">Actualizar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Update-->
+
+    <script src="OpcionMultiple.js" type="text/javascript"></script>
+    <script src="PoderJudicialCalendar.js"></script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="this.onload = function () {};
+                            handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+</body>
+
+
+</html>
+<!-- [END calendar_quickstart] -->

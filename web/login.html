@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <title>Login </title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <link href="iconfont/material-icons.css" rel="stylesheet" type="text/css"/>
+        <link rel='stylesheet' href='materializecss/css/materialize.min.css' type='text/css' media='screen' />
+        <link href="materializecss/css/login_seguridad.css" rel="stylesheet" type="text/css"/>
+
+    </head>
+
+    <body class="background-gradient">
+        <div class="row">
+            <div class="col s12 col m6 col l4 offset-m3 offset-l4 " style="margin-top: 5% ; ">
+                <img  class="responsive-img" src="img/logo-pj.png"/>
+                <div class="card ">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img class="activator " width="200" height="400" src="img/pj_foto.jpg"/>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title activator grey-text text-darken-4">Poder Judicial Del Perú<i
+                                class="material-icons right">send</i></span>
+                        <!-- <p><a href="#">This is a link</a></p> -->
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">
+                            <i class="material-icons right">close</i>
+                            Iniciar Sesion</span>
+                        <div class="">
+
+                            <form class="col s12">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input id="txtUsername"  style="text-transform: uppercase;" placeholder="Ingrese su Usuario" type="text" class="validate">
+                                        <label for="txtUsername" >Usuario</label>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <input id="txtClave" placeholder="Ingrese su Clave" type="password" class="validate">
+                                        <label for="txtClave" >Clave</label>
+                                    </div>
+
+                                    <div class="input-field col s12">
+                                        <span >Verificando si eres humano</span><br>
+                                        <div id="captcha">
+                                        </div>
+                                    </div>
+                                    <div class="input-field col s12">
+                                        <input id="txtCaptcha" placeholder="Ingrese el Codigo que se muestra Arriba" type="text" class="validate">
+                                        <label for="txtCaptcha" >Código Captcha</label>
+                                    </div>
+
+                                    <a id="btnClear" class="btn-floating btn-large waves-effect waves-light red tooltipped" 
+                                       data-position="top" 
+                                       data-delay="50" 
+                                       data-tooltip="Limpiar Datos" 
+                                       style="margin-top: 40px;" ><i class="material-icons">delete</i></a>
+
+                                    <a id="btnSingIn" class="btn-floating btn-large waves-effect waves-light blue right tooltipped" 
+                                       data-position="top" 
+                                       data-delay="50" 
+                                       data-tooltip="Iniciar Sesion" 
+                                       style="margin-top: 40px;" ><i class="material-icons">send</i></a>
+
+
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal Structure -->
+        <div id="modal1" class="modal bottom-sheet">
+            <div class="modal-content">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn red right">Cerrar</a>
+                <h4>APLICACIONES</h4>
+                <p>Aplicaciones disponibles para este usuario</p>
+
+                <ul class="collection" id="div_sistemasList">
+                    <li class="collection-item avatar">
+                        <img src="images/yuna.jpg" alt="" class="circle">
+                        <span class="title">Title</span>
+                        <p>First Line <br> Second Line </p>
+                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle">folder</i>
+                        <span class="title">Title</span>
+                        <p>First Line <br> Second Line </p>
+                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle green">assessment</i>
+                        <span class="title">Title</span>
+                        <p>First Line <br> Second Line </p>
+                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                    </li>
+                    <li class="collection-item avatar">
+                        <i class="material-icons circle red">play_arrow</i>
+                        <span class="title">Title</span>
+                        <p>First Line <br> Second Line </p>
+                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                    </li>
+                </ul>
+
+
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+
+
+        <script src="materializecss/js/global.js" type="text/javascript"></script>
+        <script src="materializecss/js/jquery.min.js"></script>
+        <script src="materializecss/js/materialize.min.js"></script>
+
+        <script src="materializecss/js/captcha.js" type="text/javascript"></script>
+        <script src="materializecss/js/login.js" type="text/javascript"></script>
+
+
+    </body> 
+
+</html>
