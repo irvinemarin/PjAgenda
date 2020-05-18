@@ -1,23 +1,25 @@
 // Client ID and API key from the Developer Console
+//$(document).ready(function () {
+
+
+
+
 var CLIENT_ID = '646797906244-3mk9qh6gjop3bc23j2lv40vele4v3kop.apps.googleusercontent.com';
 var API_KEY = 'AIzaSyBhglUzy8opk0uA85VQjMJQ6Di00fx6sx8';
 var profile;
-var StringDatos;//almacena los email para registrar
-var data_read_updte;//almacena los email para update
+var StringDatos; //almacena los email para registrar
+var data_read_updte; //almacena los email para update
 
 // Array of API discovery doc URLs for APIs used by the quickstart
 var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
-
 // Authorization scopes required by the API; multiple scopes can be
 // included, separated by spaces.
 var SCOPES = 'https://www.googleapis.com/auth/calendar';
-
 var authorizeButton = document.getElementById('authorize_button');
 var signoutButton = document.getElementById('signout_button');
 var buttonRegister = document.getElementById('saveEvent_button');
 var buttonEditar = document.getElementById('editEvent_button');
 var buttonBorrar = document.getElementById('borrarEvent_button');
-
 /**
  *  On load, called to load the auth2 library and API client library.
  */
@@ -38,12 +40,10 @@ function initClient() {
     }).then(function () {
         // Listen for sign-in state changes.
         gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
         // Handle the initial sign-in state.
         updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
         authorizeButton.onclick = handleAuthClick;
         signoutButton.onclick = handleSignoutClick;
-
     }, function (error) {
         //ESTE PARTE ESPARA MOSTRAR ERROR PARA INGRESAR AL GOOGLE CALENDA
         appendPre(JSON.stringify(error, null, 2));
@@ -64,12 +64,10 @@ function updateSigninStatus(isSignedIn) {
         $("#msjGmai2").show();
         $("#msjGmail").hide();
         $("#txtUserGmail").text(profile.getEmail());
-        console.table(profile);
 
     } else {
         authorizeButton.style.display = 'block';
         signoutButton.style.display = 'none';
-
         $("#msjGmail").show();
         $("#msjGmai2").hide();
     }
@@ -87,7 +85,6 @@ function handleAuthClick(event) {
  */
 function handleSignoutClick(event) {
     gapi.auth2.getAuthInstance().signOut();
-
 }
 
 /*Recibe el mensaje si paso algun error al ingresar a la pagina
@@ -103,22 +100,18 @@ function ListEventFullCalendar() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
         plugins: ['interaction', 'dayGrid', 'List', 'googleCalendar'],
-
         header: {
             left: 'prev,next today',
             center: 'title',
             right: 'dayGridMonth, listYear'
         },
-
         displayEventTime: true, // don't show the time column in list view
 
         // THIS KEY WON'T WORK IN PRODUCTION!!!
         // To make your own Google API key, follow the directions here:
         googleCalendarApiKey: API_KEY,
-
         // email del user logueado
         events: profile.getEmail(),
-
         eventClick: function (arg) {
             // opens events in a popup window
             arg.jsEvent.preventDefault() // don't navigate in main tab
@@ -130,17 +123,54 @@ function ListEventFullCalendar() {
     });
     calendar.render();
     $("#txtUserGmail").text(profile.getEmail());
-
 }
+
+
+var errors = 0;
+function f_checkInputsDB(imputId) {
+    if ($(imputId).val == null || $(imputId).val.length == 0 || /^\s+$/.test($(imputId).val)) {
+        $(imputId).addClass('is-invalid');
+        errors++;
+    }
+}
+function f_checkSelectsDB(imputSelectId) {
+    if ($(imputSelectId).val() == null || $(imputSelectId).val() == 0) {
+        $(imputSelectId).addClass('is-invalid');
+        errors++;
+    }
+}
+
 
 //funcion para registrar evento a google calendar Api
 function EventSaveCalendarApi() {
+    errors = 0;
     var vr_titulo = $('#text-Titulo').val();
     var vr_fechaI = $('#text-fechaI').val();
     var vr_horaI = $('#text-horaI').val();
     var vr_horaF = $('#text-horaF').val();
     var vr_descripcion = $('#text-descripcion').val();
-    if (validarCampos(1)) {
+//    var vr_fechaIR = $('#text-fechaIR').val();
+//    var vr_fechaFR = $('#text-fechaFR').val();
+//    var vr_horaIR = $('#text-horaIR').val();
+//    var vr_horaFR = $('#text-horaFR').val();
+    var vr_selt_tipoAgenda = $('#selt_tipoAgenda').val();
+//    var vr_estadoAgenda = $('#selt_estadoAgenda').val();
+    var vr_selt_salaAdudiencia = $('#selt_salaAdudiencia').val();
+    var vr_tipoAudiencia = $('#selt_tipoAudiencia').val();
+    var vr_selt_agendaParent = $('#selt_agendaParent').val();
+    var vr_cbox_allday = $('#cbox_allday').is(":checked");
+//    f_checkInputsDB('#text-fechaIR');
+//    f_checkInputsDB('#text-fechaFR');
+//    f_checkInputsDB('#text-horaIR');
+//    f_checkInputsDB('#text-horaFR');
+    f_checkSelectsDB("#selt_tipoAgenda");
+//    f_checkSelectsDB("#selt_estadoAgenda");
+    f_checkSelectsDB("#selt_salaAdudiencia");
+    f_checkSelectsDB("#selt_tipoAudiencia");
+    //f_checkSelectsDB("#selt_agendaParent");
+    if (validarCampos(1) && errors == 0) {
+
+
         const copyItems = [];
         //cambio de formato a la fechas
         var fechaInicio = convertDateFormat(vr_fechaI, 1);
@@ -179,6 +209,27 @@ function EventSaveCalendarApi() {
             request.execute(function (resp) {
                 if (resp.status == 'confirmed') {
                     //cuando se registro correctamente
+
+
+                    var AgendaItem = {
+
+                        x_titulo: vr_titulo,
+                        x_descripcion: vr_descripcion,
+                        f_inicio: vr_fechaI,
+                        f_fin: vr_horaI,
+                        horaF: vr_horaF,
+//                        fechaIR: vr_fechaIR,
+//                        fechaFR: vr_fechaFR,
+//                        horaIR: vr_horaIR,
+//                        horaFR: vr_horaFR,
+                        n_tipo_agenda: vr_selt_tipoAgenda,
+//                        estadoAgenda: vr_estadoAgenda,
+                        n_sala_audiencia: vr_selt_salaAdudiencia,
+                        n_tipo_audiencia: vr_tipoAudiencia,
+                        n_agenda_pad: vr_selt_agendaParent,
+                        n_tododia: vr_cbox_allday
+                    };
+                    f_onSaveItemAgenda(AgendaItem);
                     $('#calendar').empty();
                     ListEventFullCalendar();
                     $('#exampleModalCenter').modal('hide');
@@ -259,7 +310,6 @@ function EventUpateCalendarApi() {
     var vr_horaI = $('#text-horaI2').val();
     var vr_horaF = $('#text-horaF2').val();
     var vr_descripcion = $('#text-descripcion2').val();
-
     if (validarCampos(2)) {
         //array que almacena el formato object-google-calendarApi
         const copyItems = [];
@@ -325,20 +375,18 @@ $("#text-invitados2").on('change', function () {
     var val = $(this).val();
     data_read_updte = val;
 });
-
 //funcion que optiene los datos para registar
 $("#text-invitados").on('change', function () {
     var val = $(this).val();
     StringDatos = val;
 });
-
 //funcion para cambiar formato de fechas a YYYY-MM-DD
 function convertDateFormat(string, option) {
     if (option == 1) {
-        var info = string.split('/');//YYYY-MM-DD
+        var info = string.split('/'); //YYYY-MM-DD
         return info[2] + '-' + info[1] + '-' + info[0];
     } else {
-        var info = string.split('-');//DD/MM/YYYY
+        var info = string.split('-'); //DD/MM/YYYY
         return info[0] + '/' + info[1] + '/' + info[2];
     }
 }
@@ -351,14 +399,12 @@ function converDateFormatDetalleEvent(date, horI, horf) {
     var dt = new Date(info[1] + ' ' + info[0] + ', ' + info[2]);
     var text = dias[dt.getUTCDay()] + ", " + info[0] + " de " + meses[dt.getMonth()] + " ⋅ " + horI + " - " + horf;
     return text;
-
 }
 
 //evento para el select multiple de correo for UPDATE   
 const displaySelect = new SlimSelect({
     select: '#text-invitados2'
 });
-
 /*Simula los datos que vengan desde el SERVIDOR-JAVA en formato json
  EL SERVIDOR DEBE DEVOLVER EN FORMATO JSON PARA LUEGO OPTENER AQUI
  y recorrerlo en un for para luego agregarlo a un array[]*/
@@ -366,14 +412,12 @@ const copyItems = [];
 copyItems.push({'email': 'lpage@example.com'});
 copyItems.push({'email': 'sbrin@example.com'});
 copyItems.push({'email': 'prueba@example.com'});
-
 //recorremos el array para agregar a otro array objet para luego agregar al select multiple
 const data = [];
 copyItems.forEach(function (item) {
     data.push({'value': item.email, 'text': item.email});
 });
 displaySelect.setData(data);
-
 //btn para editar event
 $(".btnEditEventoCalendarApi").on("click", function () {
     var mstr_Id = $(this).data("id");
@@ -381,6 +425,12 @@ $(".btnEditEventoCalendarApi").on("click", function () {
     $('#ModalUpdate').modal('show');
     EventReadCalendarApi(mstr_Id);
 });
+
+
+
+
+
+
 
 //btn para eliminar event
 $(".btnDeleteEventoCalendarApi").on("click", function () {
@@ -398,25 +448,21 @@ $(".btnDeleteEventoCalendarApi").on("click", function () {
             //si presiona OK
             EventDeleteCalendarApi(mstr_Id);
             $('#Modaldetalle').modal('hide');
-
-
         }
-    });
+    }
+    );
 });
-
 //funcion para limpiar campos y clases
 function limpiarCampos() {
     $('#text-Titulo').val('');
     $('#text-invitados').val('');
     $('#text-descripcion').val('');
-
     $('#text-Titulo').removeClass('is-invalid');
     $('#text-fechaI').removeClass('is-invalid');
     $('#text-horaI').removeClass('is-invalid');
     $('#text-horaF').removeClass('is-invalid');
     $('#text-invitados').removeClass('is-invalid');
     $('#text-descripcion').removeClass('is-invalid');
-
     $('#text-Titulo2').removeClass('is-invalid');
     $('#text-fechaI2').removeClass('is-invalid');
     $('#text-horaI2').removeClass('is-invalid');
@@ -426,18 +472,107 @@ function limpiarCampos() {
 }
 
 
+$("#saveEvent_button").on("click", function () {
+    f_getListSalaAud();
+    f_getListTipoAgenda();
+
+    f_getListTipoAud();
+    f_getListAgendaPadre();
+    f_getListInvitados();
+    f_getListEstadoAgenda();
+
+});
+//$('#exampleModalCenter').on('shown.bs.modal', function () {
+////   
+//})
 
 
-function f_onSaveItemAgenda() {
-    $.post("bscs?action=op03-1", $.param(params), function (response) {
+function f_onSaveItemAgenda(AgendaItem) {
+    console.table(AgendaItem);
+//    $.post("ags?action=op01", $.param({AgendaItem: JSON.stringify(AgendaItem)}), function (response) {
+//
+////        $("#divContentSeguimiento").append(getHtmlItemAgenda(response));
+//
+//    });
+}
 
 
+function f_getListTipoAgenda() {
+    $.post("ags?action=op06", $.param({}), function (response) {
+        var htmlItem = "";
+
+        $("#selt_tipoAgenda").empty();
+        var rd = response;
+        htmlItem += '<option value="-1">--Seleccionar--</option>';
+        for (var i in rd) {
+            htmlItem += '<option value="' + rd[i].n_tipo_agenda + '">' + rd[i].x_descripcion + '</option>';
+        }
+        $("#selt_tipoAgenda").append(htmlItem);
+    });
+
+}
+function f_getListEstadoAgenda() {
 
 
+//    $.post("ags?action=op04", $.param({}), function (response) {
+//        var htmlItem = "";
+//        $("#selt_estadoAgenda").empty();
+//        var rd = response;
+//        htmlItem += '<option value="-1">--Seleccionar--</option>';
+//        for (var i in rd) {
+//            htmlItem += '<option value="' + rd[i].n_estado_agenda + '">' + rd[i].l_activo + '</option>';
+//        }
+//        $("#selt_estadoAgenda").append(htmlItem);
+//    });
+}
+function f_getListSalaAud() {
+    $.post("ags?action=op07", $.param({}), function (response) {
+        var htmlItem = "";
+        $("#selt_salaAdudiencia").empty();
+        var rd = response;
+        htmlItem += '<option value="-1">--Seleccionar--</option>';
 
-        $("#divContentSeguimiento").append(getHtmlItemAgenda(response));
+        for (var i in rd) {
+            htmlItem += '<option value="' + rd[i].n_sala_audiencia + '">' + rd[i].x_descripcion + '</option>';
+        }
+        $("#selt_salaAdudiencia").append(htmlItem);
 
     });
 }
+function f_getListTipoAud() {
+    $.post("ags?action=op08", $.param({}), function (response) {
+        var htmlItem = "";
+        $("#selt_tipoAudiencia").empty();
+        var rd = response;
+        htmlItem += '<option value="-1">--Seleccionar--</option>';
+        for (var i in rd) {
+            htmlItem += '<option value="' + rd[i].n_tipo_audiencia + '">' + rd[i].x_descripcion + '</option>';
+        }
+        $("#selt_tipoAudiencia").append(htmlItem);
+    });
+}
+function f_getListAgendaPadre() {
+//    $.post("ags?action=op01", $.param({}), function (response) {
+//        var htmlItem = "";
+//
+//
+//        $("#selt_salaAdudiencia").empty();
+//        var rd = response;
+//        htmlItem += '<option value="-1">--Seleccionar--</option>';
+//        for (var i in rd) {
+//            htmlItem += '<option value="' + rd[i].n_persona + '">' + rd[i].x_correo + '</option>';
+//        }
+//        $("#selt_salaAdudiencia").append(htmlItem);
+//    });
+}
+function f_getListInvitados() {
 
+//    $.post("ags?action=op02", $.param({}), function (response) {
+//
+////        $("#divContentSeguimiento").append(getHtmlItemAgenda(response));
+//
+//    });
+}
+
+// });
 

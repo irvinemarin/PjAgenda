@@ -9,19 +9,12 @@ package com.pj.per.entities;
  *
  * @author irvinmarin
  */
-public class ParticipanteAsiste {
+public class SalaAudiencia {
 
-    public int n_ano;
-    public int n_agenda;
-    public int n_persona;
-    public String f_registro;
-    public int x_observacion;
+    public int n_sala_audiencia;
+    public String x_descripcion;
+    public int n_servidor;
     public String l_activo;
-    public int n_orden;
-    public int n_asiste;
-    public int n_rechazo;
-    public String f_rechazo;
-    public String x_rechazo;
     public String f_aud;
     public String b_aud;
     public String c_aud_uid;
@@ -30,44 +23,33 @@ public class ParticipanteAsiste {
     public String c_aud_ip;
     public String c_aud_mcaddr;
 
-    public int getN_ano() {
-        return n_ano;
+    public SalaAudiencia() {
     }
 
-    public void setN_ano(int n_ano) {
-        this.n_ano = n_ano;
+    
+    
+    public int getN_sala_audiencia() {
+        return n_sala_audiencia;
     }
 
-    public int getN_agenda() {
-        return n_agenda;
+    public void setN_sala_audiencia(int n_sala_audiencia) {
+        this.n_sala_audiencia = n_sala_audiencia;
     }
 
-    public void setN_agenda(int n_agenda) {
-        this.n_agenda = n_agenda;
+    public String getX_descripcion() {
+        return x_descripcion;
     }
 
-    public int getN_persona() {
-        return n_persona;
+    public void setX_descripcion(String x_descripcion) {
+        this.x_descripcion = x_descripcion;
     }
 
-    public void setN_persona(int n_persona) {
-        this.n_persona = n_persona;
+    public int getN_servidor() {
+        return n_servidor;
     }
 
-    public String getF_registro() {
-        return f_registro;
-    }
-
-    public void setF_registro(String f_registro) {
-        this.f_registro = f_registro;
-    }
-
-    public int getX_observacion() {
-        return x_observacion;
-    }
-
-    public void setX_observacion(int x_observacion) {
-        this.x_observacion = x_observacion;
+    public void setN_servidor(int n_servidor) {
+        this.n_servidor = n_servidor;
     }
 
     public String getL_activo() {
@@ -76,46 +58,6 @@ public class ParticipanteAsiste {
 
     public void setL_activo(String l_activo) {
         this.l_activo = l_activo;
-    }
-
-    public int getN_orden() {
-        return n_orden;
-    }
-
-    public void setN_orden(int n_orden) {
-        this.n_orden = n_orden;
-    }
-
-    public int getN_asiste() {
-        return n_asiste;
-    }
-
-    public void setN_asiste(int n_asiste) {
-        this.n_asiste = n_asiste;
-    }
-
-    public int getN_rechazo() {
-        return n_rechazo;
-    }
-
-    public void setN_rechazo(int n_rechazo) {
-        this.n_rechazo = n_rechazo;
-    }
-
-    public String getF_rechazo() {
-        return f_rechazo;
-    }
-
-    public void setF_rechazo(String f_rechazo) {
-        this.f_rechazo = f_rechazo;
-    }
-
-    public String getX_rechazo() {
-        return x_rechazo;
-    }
-
-    public void setX_rechazo(String x_rechazo) {
-        this.x_rechazo = x_rechazo;
     }
 
     public String getF_aud() {
