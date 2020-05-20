@@ -64,6 +64,7 @@ function updateSigninStatus(isSignedIn) {
         $("#msjGmai2").show();
         $("#msjGmail").hide();
         $("#txtUserGmail").text(profile.getEmail());
+        alertify.success('Conexion a Calendar correcta!');
 
     } else {
         authorizeButton.style.display = 'block';
@@ -158,7 +159,14 @@ function EventSaveCalendarApi() {
     var vr_selt_salaAdudiencia = $('#selt_salaAdudiencia').val();
     var vr_tipoAudiencia = $('#selt_tipoAudiencia').val();
     var vr_selt_agendaParent = $('#selt_agendaParent').val();
-    var vr_cbox_allday = $('#cbox_allday').is(":checked");
+    var vr_cbox_allday = 0;
+
+    if ($('#cbox_allday').is(":checked")) {
+        vr_cbox_allday = 1;
+    }
+
+
+
 //    f_checkInputsDB('#text-fechaIR');
 //    f_checkInputsDB('#text-fechaFR');
 //    f_checkInputsDB('#text-horaIR');
@@ -169,76 +177,26 @@ function EventSaveCalendarApi() {
     f_checkSelectsDB("#selt_tipoAudiencia");
     //f_checkSelectsDB("#selt_agendaParent");
     if (validarCampos(1) && errors == 0) {
+        var AgendaItem = {
 
-
-        const copyItems = [];
-        //cambio de formato a la fechas
-        var fechaInicio = convertDateFormat(vr_fechaI, 1);
-        //agraga datos a un array-object
-        StringDatos.forEach(function (item) {
-            copyItems.push({'email': item});
-        });
-        //this object formato para registrar 
-        var event = {
-            'summary': vr_titulo,
-            'description': vr_descripcion,
-            'start': {
-                'dateTime': fechaInicio + 'T' + vr_horaI + ':00',
-                'timeZone': 'America/Lima'
-            },
-            'end': {
-                'dateTime': fechaInicio + 'T' + vr_horaF + ':00',
-                'timeZone': 'America/Lima'
-            },
-            'attendees': copyItems,
-            'reminders': {
-                'useDefault': false,
-                'overrides': [
-                    {'method': 'email', 'minutes': 24 * 60},
-                    {'method': 'popup', 'minutes': 10}
-                ]
-            }
-        };
-        //this event save 
-        gapi.client.load('calendar', 'v3', function () {
-            var request = gapi.client.calendar.events.insert({
-                'calendarId': 'primary',
-                "resource": event
-            });
-            // handle the response from our api call
-            request.execute(function (resp) {
-                if (resp.status == 'confirmed') {
-                    //cuando se registro correctamente
-
-
-                    var AgendaItem = {
-
-                        x_titulo: vr_titulo,
-                        x_descripcion: vr_descripcion,
-                        f_inicio: vr_fechaI,
-                        f_fin: vr_horaI,
-                        horaF: vr_horaF,
+            x_titulo: vr_titulo,
+            x_descripcion: vr_descripcion,
+            f_inicio: vr_fechaI,
+            h_in: vr_horaI,
+            h_fin: vr_horaF,
 //                        fechaIR: vr_fechaIR,
 //                        fechaFR: vr_fechaFR,
 //                        horaIR: vr_horaIR,
 //                        horaFR: vr_horaFR,
-                        n_tipo_agenda: vr_selt_tipoAgenda,
+            n_tipo_agenda: vr_selt_tipoAgenda,
 //                        estadoAgenda: vr_estadoAgenda,
-                        n_sala_audiencia: vr_selt_salaAdudiencia,
-                        n_tipo_audiencia: vr_tipoAudiencia,
-                        n_agenda_pad: vr_selt_agendaParent,
-                        n_tododia: vr_cbox_allday
-                    };
-                    f_onSaveItemAgenda(AgendaItem);
-                    $('#calendar').empty();
-                    ListEventFullCalendar();
-                    $('#exampleModalCenter').modal('hide');
-                } else {
-                    //cuando ocurrio un problema al registrar
-                    document.getElementById('content').innerHTML = "There was a problem. Reload page and try again.";
-                }
-            });
-        });
+            n_sala_audiencia: vr_selt_salaAdudiencia,
+            n_tipo_audiencia: vr_tipoAudiencia,
+            n_agenda_pad: vr_selt_agendaParent,
+            n_tododia: vr_cbox_allday
+        };
+        f_onSaveItemAgenda(AgendaItem);
+
     }
 }
 
@@ -473,105 +431,270 @@ function limpiarCampos() {
 
 
 $("#saveEvent_button").on("click", function () {
+
     f_getListSalaAud();
     f_getListTipoAgenda();
-
     f_getListTipoAud();
-    f_getListAgendaPadre();
+//    f_getListAgendaPadre();
     f_getListInvitados();
-    f_getListEstadoAgenda();
+//    f_getListEstadoAgenda();
 
 });
-//$('#exampleModalCenter').on('shown.bs.modal', function () {
-////   
-//})
 
 
+var SavedDB = false;
 function f_onSaveItemAgenda(AgendaItem) {
-    console.table(AgendaItem);
-//    $.post("ags?action=op01", $.param({AgendaItem: JSON.stringify(AgendaItem)}), function (response) {
-//
-////        $("#divContentSeguimiento").append(getHtmlItemAgenda(response));
-//
-//    });
+//    console.table(AgendaItem);
+
+
+    var params = {Agenda: JSON.stringify(AgendaItem)};
+    var action = "ags?action=ins";
+//    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+
+            if (response == 1 || response == "1") {
+
+
+                //registrar en calendar
+                const copyItems = [];
+                //cambio de formato a la fechas
+                var fechaInicio = convertDateFormat(AgendaItem.f_inicio, 1);
+                //agraga datos a un array-object
+                StringDatos.forEach(function (item) {
+                    copyItems.push({'email': item});
+                });
+                //this object formato para registrar 
+                var event = {
+                    'summary': AgendaItem.x_titulo,
+                    'description': AgendaItem.x_descripcion,
+                    'start': {
+                        'dateTime': fechaInicio + 'T' + AgendaItem.h_in + ':00',
+                        'timeZone': 'America/Lima'
+                    },
+                    'end': {
+                        'dateTime': fechaInicio + 'T' + AgendaItem.h_fin + ':00',
+                        'timeZone': 'America/Lima'
+                    },
+                    'attendees': copyItems,
+                    'reminders': {
+                        'useDefault': false,
+                        'overrides': [
+                            {'method': 'email', 'minutes': 24 * 60},
+                            {'method': 'popup', 'minutes': 10}
+                        ]
+                    }
+                };
+                //this event save 
+                gapi.client.load('calendar', 'v3', function () {
+                    var request = gapi.client.calendar.events.insert({
+                        'calendarId': 'primary',
+                        "resource": event
+                    });
+                    // handle the response from our api call
+                    request.execute(function (resp) {
+                        if (resp.status == 'confirmed') {
+                            //cuando se registro correctamente
+
+                            $('#calendar').empty();
+                            ListEventFullCalendar();
+                            $('#exampleModalCenter').modal('hide');
+                            alertify.warning("Registrado Correctamente");
+                        } else {
+                            //cuando ocurrio un problema al registrar
+                            document.getElementById('content').innerHTML = "There was a problem. Reload page and try again.";
+                        }
+                    });
+                });
+            } else {
+                alertify.warning("No Se Logro Registrar");
+
+            }
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_onSaveItemAgenda !');
+
+        }
+    });
 }
 
 
 function f_getListTipoAgenda() {
-    $.post("ags?action=op06", $.param({}), function (response) {
-        var htmlItem = "";
 
-        $("#selt_tipoAgenda").empty();
-        var rd = response;
-        htmlItem += '<option value="-1">--Seleccionar--</option>';
-        for (var i in rd) {
-            htmlItem += '<option value="' + rd[i].n_tipo_agenda + '">' + rd[i].x_descripcion + '</option>';
+
+    var action = "ags?action=op06";
+    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+            var htmlItem = "";
+
+            $("#selt_tipoAgenda").empty();
+            var rd = response;
+            htmlItem += '<option value="-1">--Seleccionar--</option>';
+            for (var i in rd) {
+                htmlItem += '<option value="' + rd[i].n_tipo_agenda + '">'
+                        + rd[i].x_descripcion + '</option>';
+            }
+            $("#selt_tipoAgenda").append(htmlItem);
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_getListTipoAgenda !');
         }
-        $("#selt_tipoAgenda").append(htmlItem);
     });
+
+
 
 }
 function f_getListEstadoAgenda() {
 
 
-//    $.post("ags?action=op04", $.param({}), function (response) {
-//        var htmlItem = "";
-//        $("#selt_estadoAgenda").empty();
-//        var rd = response;
-//        htmlItem += '<option value="-1">--Seleccionar--</option>';
-//        for (var i in rd) {
-//            htmlItem += '<option value="' + rd[i].n_estado_agenda + '">' + rd[i].l_activo + '</option>';
-//        }
-//        $("#selt_estadoAgenda").append(htmlItem);
-//    });
+
+    var action = "ags?action=op04";
+    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+            var htmlItem = "";
+            $("#selt_estadoAgenda").empty();
+            var rd = response;
+            htmlItem += '<option value="-1">--Seleccionar--</option>';
+            for (var i in rd) {
+                htmlItem += '<option class="persona_invitado" data-idpersona="' + rd[i].n_persona + '" value="' + rd[i].n_estado_agenda + '">' + rd[i].l_activo + '</option>';
+            }
+            $("#selt_estadoAgenda").append(htmlItem);
+
+            var listPersonasInvitadas = new Array();
+            $(".persona_invitado").on("click", function (parameters) {
+
+
+                var n_personaSelected = $(this).data("idpersona");
+                alertify.warning("n_persona " + n_personaSelected);
+                listPersonasInvitadas.push(n_personaSelected);
+
+            });
+
+
+
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_getListEstadoAgenda !');
+        }
+    });
+
+
 }
 function f_getListSalaAud() {
-    $.post("ags?action=op07", $.param({}), function (response) {
-        var htmlItem = "";
-        $("#selt_salaAdudiencia").empty();
-        var rd = response;
-        htmlItem += '<option value="-1">--Seleccionar--</option>';
 
-        for (var i in rd) {
-            htmlItem += '<option value="' + rd[i].n_sala_audiencia + '">' + rd[i].x_descripcion + '</option>';
+    var action = "ags?action=op07";
+    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+            var htmlItem = "";
+            $("#selt_salaAdudiencia").empty();
+            var rd = response;
+            htmlItem += '<option value="-1">--Seleccionar--</option>';
+
+            for (var i in rd) {
+                htmlItem += '<option value="' + rd[i].n_sala_audiencia + '">' + rd[i].x_descripcion + '</option>';
+            }
+            $("#selt_salaAdudiencia").append(htmlItem);
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_getListSalaAud !');
         }
-        $("#selt_salaAdudiencia").append(htmlItem);
-
     });
+
+
 }
 function f_getListTipoAud() {
-    $.post("ags?action=op08", $.param({}), function (response) {
-        var htmlItem = "";
-        $("#selt_tipoAudiencia").empty();
-        var rd = response;
-        htmlItem += '<option value="-1">--Seleccionar--</option>';
-        for (var i in rd) {
-            htmlItem += '<option value="' + rd[i].n_tipo_audiencia + '">' + rd[i].x_descripcion + '</option>';
+
+
+    var action = "ags?action=op08";
+    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+            var htmlItem = "";
+            $("#selt_tipoAudiencia").empty();
+            var rd = response;
+            htmlItem += '<option value="-1">--Seleccionar--</option>';
+            for (var i in rd) {
+                htmlItem += '<option value="' + rd[i].n_tipo_audiencia + '">' + rd[i].x_descripcion + '</option>';
+            }
+            $("#selt_tipoAudiencia").append(htmlItem);
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_getListTipoAud !');
         }
-        $("#selt_tipoAudiencia").append(htmlItem);
     });
+
 }
 function f_getListAgendaPadre() {
-//    $.post("ags?action=op01", $.param({}), function (response) {
-//        var htmlItem = "";
-//
-//
-//        $("#selt_salaAdudiencia").empty();
-//        var rd = response;
-//        htmlItem += '<option value="-1">--Seleccionar--</option>';
-//        for (var i in rd) {
-//            htmlItem += '<option value="' + rd[i].n_persona + '">' + rd[i].x_correo + '</option>';
-//        }
-//        $("#selt_salaAdudiencia").append(htmlItem);
-//    });
+
+    var action = "ags?action=op01";
+    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+//            var htmlItem = "";
+//            $("#selt_salaAdudiencia").empty();
+//            var rd = response;
+//            htmlItem += '<option value="-1">--Seleccionar--</option>';
+//            for (var i in rd) {
+//                htmlItem += '<option value="' + rd[i].n_persona + '">' + rd[i].x_correo + '</option>';
+//            }
+//            $("#selt_salaAdudiencia").append(htmlItem);
+//        },
+//        error: function (jqXHR, exception) {
+//            alertify.warning('error f_getListAgendaPadre !');
+        }
+    });
+
+
+
 }
 function f_getListInvitados() {
 
-//    $.post("ags?action=op02", $.param({}), function (response) {
-//
-////        $("#divContentSeguimiento").append(getHtmlItemAgenda(response));
-//
-//    });
+
+    var action = "ags?action=op03";
+    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+            var htmlItem = "";
+            $("#text-invitados").empty();
+            var rd = response;
+            htmlItem += '<option value="-1">--Seleccionar--</option>';
+            for (var i in rd) {
+                htmlItem += '<option value="' + rd[i].x_correo + '">' + rd[i].x_correo + '</option>';
+            }
+            $("#text-invitados").append(htmlItem);
+
+
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_getListInvitados !');
+        }
+    });
+
+
 }
 
 // });

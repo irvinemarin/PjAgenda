@@ -40,6 +40,18 @@ public class ParticipanteAgenda {
     public String c_aud_ip;
     public String c_aud_mcaddr;
 
+    String fullName;
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
+    
+
     public int getN_persona() {
         return n_persona;
     }
@@ -263,6 +275,5 @@ public class ParticipanteAgenda {
     public void setC_aud_mcaddr(String c_aud_mcaddr) {
         this.c_aud_mcaddr = c_aud_mcaddr;
     }
-    
-    
+
 }

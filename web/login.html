@@ -31,38 +31,47 @@
                             Iniciar Sesion</span>
                         <div class="">
 
-                            <form class="col s12">
+                            <form class="col s12 ">
                                 <div class="row">
-                                    <div class="input-field col s12">
-                                        <input id="txtUsername"  style="text-transform: uppercase;" placeholder="Ingrese su Usuario" type="text" class="validate">
-                                        <label for="txtUsername" >Usuario</label>
-                                    </div>
-                                    <div class="input-field col s12">
-                                        <input id="txtClave" placeholder="Ingrese su Clave" type="password" class="validate">
-                                        <label for="txtClave" >Clave</label>
-                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s6 offset-s3">
+                                            <input id="txtUsername"  style="text-transform: uppercase;" placeholder="Ingrese su Usuario" type="text" class="validate">
+                                            <label for="txtUsername" >Usuario</label>
+                                        </div>
+                                        <div class="input-field col s6 offset-s3">
+                                            <input id="txtClave" placeholder="Ingrese su Clave" type="password" class="validate">
+                                            <label for="txtClave" >Clave</label>
+                                        </div>
 
-                                    <div class="input-field col s12">
-                                        <span >Verificando si eres humano</span><br>
-                                        <div id="captcha">
+                                        <div class="input-field col s6 offset-s3">
+
+                                            <span >Verificando si eres humano</span> <a id="btnReloadCodigo"  class="btn-floating btn-small waves-effect waves-light green tooltipped right" 
+                                                                                        data-position="top" 
+                                                                                        data-delay="50" 
+                                                                                        data-tooltip="Recargar codigo" 
+                                                                                        ><i class="material-icons">cached</i></a><br>
+                                            <div id="captcha">
+                                            </div>
+
+                                        </div>
+                                        <div class="input-field col s6 offset-s3">
+                                            <input id="txtCaptcha" placeholder="Ingrese el Codigo que se muestra Arriba" type="text" class="validate">
+                                            <label for="txtCaptcha" >Código Captcha</label>
                                         </div>
                                     </div>
-                                    <div class="input-field col s12">
-                                        <input id="txtCaptcha" placeholder="Ingrese el Codigo que se muestra Arriba" type="text" class="validate">
-                                        <label for="txtCaptcha" >Código Captcha</label>
-                                    </div>
+
 
                                     <a id="btnClear" class="btn-floating btn-large waves-effect waves-light red tooltipped" 
                                        data-position="top" 
                                        data-delay="50" 
                                        data-tooltip="Limpiar Datos" 
-                                       style="margin-top: 40px;" ><i class="material-icons">delete</i></a>
+                                       style="margin-top: 20px;" ><i class="material-icons">delete</i></a>
 
                                     <a id="btnSingIn" class="btn-floating btn-large waves-effect waves-light blue right tooltipped" 
                                        data-position="top" 
                                        data-delay="50" 
                                        data-tooltip="Iniciar Sesion" 
-                                       style="margin-top: 40px;" ><i class="material-icons">send</i></a>
+                                       style="margin-top: 20px;" ><i class="material-icons">send</i></a>
 
 
                                 </div>

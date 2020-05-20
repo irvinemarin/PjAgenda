@@ -23,7 +23,7 @@ public class Conexion {
     private static final String PASS = "11111";
     private static Connection instance = null;
 
-    public static Connection getConexion() {
+    public static Connection getInstanceConexion() {
         try {
             Class.forName(DRIVER);
             if (instance == null) {

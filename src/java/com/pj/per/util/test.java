@@ -11,6 +11,6 @@ package com.pj.per.util;
  */
 public class test {
     public static void main(String[] args) {
-        Conexion.getConexion();
+        Conexion.getInstanceConexion();
     }
 }

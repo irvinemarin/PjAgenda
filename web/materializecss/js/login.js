@@ -27,6 +27,9 @@ $(document).ready(function () {
 
         validateCaptcha();
     });
+    $("#btnReloadCodigo").on("click", function () {
+        createCaptcha();
+    });
     createCaptcha();
     function createCaptcha() {
         //clear the contents of captcha div first 
@@ -71,56 +74,29 @@ $(document).ready(function () {
         f_validateInput("#txtClave", 2);
         if (errors == 0) {
 //            f_showToastMsj("Datos Correctos");
-            var url = "http://" + UrlGlobal + "/" + NameServerRest + "/webresources/security.login/validate/" + $("#txtUsername").val() + "_" + $("#txtClave").val();
+            var action = "ls?action=login";
             var params = {
-
+                username: $("#txtUsername").val(),
+                clave: $("#txtClave").val()
             };
             $.ajax({
-                url: url,
-                type: "POST",
-                contentType: 'application/json',
-                dataType: "json",
-                headers: {
-                    "authorization": keyApi
-                },
-                data: JSON.stringify(params),
-                processData: false,
+                url: action,
+                method: "POST",
+                data: params,
                 success: function (response) {
 
-                    if (response == "-2") {
+                    if (response == "0") {
                         f_showToastMsj("Usuario o clave Incorrectos");
                         f_clearInputs();
                     } else {
-                        $("#modal1").modal('open');
-                        f_showToastMsj("response " + response);
-                        var rd = response;
-                        var html = "";
-                        $("#div_sistemasList").empty();
-                        for (var i in rd) {
 
-                            html += '<li class="collection-item avatar"' +
-                                    'data-url_sistema= "' + rd[i].referencia + '"  ' +
-                                    'data-nombre_perfil= "' + rd[i].nombrePerfil + '"  ' +
-                                    'data-nombre_sistema="' + rd[i].nombre + '" > ' +
-                                    '<i class="material-icons circle green">assessment</i>' +
-                                    '<span class="title">' + rd[i].nombre + '</span>' +
-                                    '<p>' + rd[i].descripcion + '<br> </p>' +
-                                    '<a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>' +
-                                    '</li>';
+                        if (response == 1 || response == "1") {
+                            window.location.replace("agenda.html");
+                            f_clearInputs();
+                        } else {
+                            f_showToastMsj("Usuario o clave Incorrectos");
+                            f_clearInputs();
                         }
-                        $("#div_sistemasList").append(html);
-                        sessionStorage.setItem('username', $("#txtUsername").val());
-                        console.log("username storage : " + sessionStorage.getItem("username"))
-                        debugger;
-                        $("#div_sistemasList li").on("click", function () {
-                            var url = $(this).data('url_sistema');
-                            var nombreSistema = $(this).data('nombre_sistema');
-                            var nombrePerfil = $(this).data('nombre_perfil');
-                            sessionStorage.setItem('nombreSistema', nombreSistema);
-                            sessionStorage.setItem('nombrePerfil', nombrePerfil);
-                            window.location.href = "main.html";
-                        });
-                        f_clearInputs();
                     }
 
                 },

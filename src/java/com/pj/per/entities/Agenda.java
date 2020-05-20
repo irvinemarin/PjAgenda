@@ -16,10 +16,16 @@ public class Agenda {
 
     public String f_inicio;
     public String f_fin;
+
+    public String h_in;
+    public String h_fin;
+
     public String f_inicio_real;
     public String f_fin_real;
-    
+
     public int n_agenda_pad;
+    public String x_agenda_pad;
+
     public int n_tododia;
     public int n_sala_audiencia;
     public int n_tipo_audiencia;
@@ -42,6 +48,30 @@ public class Agenda {
     public String c_aud_pc;
     public String c_aud_ip;
     public String c_aud_mcaddr;
+
+    public String getX_agenda_pad() {
+        return x_agenda_pad;
+    }
+
+    public void setX_agenda_pad(String x_agenda_pad) {
+        this.x_agenda_pad = x_agenda_pad;
+    }
+
+    public String getH_fin() {
+        return h_fin;
+    }
+
+    public void setH_fin(String h_fin) {
+        this.h_fin = h_fin;
+    }
+
+    public String getH_in() {
+        return h_in;
+    }
+
+    public void setH_in(String h_in) {
+        this.h_in = h_in;
+    }
 
     public int getN_ano() {
         return n_ano;

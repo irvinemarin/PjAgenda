@@ -33,51 +33,31 @@ public class LoginDao {
     private PreparedStatement ps;
     private ResultSet rs;
 
-    public List<Sistema> validateUser(String usernanme, String clave, String session) {
+    public int validateUser(String usernanme, String clave, String session) {
         Usuario u = null;
-        List<Sistema> lista1 = null;
+        int userId = 0;
 
         try {
 
-            ps = Conexion.getConexion().prepareStatement("Select * from mae_persona "
+            ps = Conexion.getInstanceConexion().prepareStatement("Select * from mae_persona "
                     + "                                   where     c_login='" + usernanme + "' "
                     + "                                   and       c_clave='" + clave + "' ");
             rs = ps.executeQuery();
             while (rs.next()) {
-                System.out.println("n_persona : " + rs.getString("n_persona"));
                 u = new Usuario();
                 u.setUserId(rs.getInt("n_persona"));
                 u.setUsername(usernanme);
                 u.setNombre(rs.getString("x_nombre"));
-                if (u != null) {
-                    ps = null;
-                    rs = null;
-                    ps = Conexion.getConexion().prepareStatement("select si.n_idsistema, si.x_nombre, si.c_referencia, si.x_descripcion, pf.x_nombre as nombrePerfil "
-                            + " from mov_sesion se left join mae_sistema si on se.n_idsistema= si.n_idsistema left join mae_perfil pf  on se.n_idperfil= pf.n_idperfil where se.n_persona=" + u.getUserId()
-                    );
-                    rs = ps.executeQuery();
-                    lista1 = new ArrayList<>();
-                    while (rs.next()) {
-                        System.out.println("x_descripcion : " + rs.getString("x_descripcion"));
-                        Sistema k = new Sistema();
 
-                        k.setIdSistema(rs.getInt("n_idsistema"));
-                        k.setNombre(rs.getString("x_nombre"));
-                        k.setReferencia(rs.getString("c_referencia"));
-                        k.setDescripcion(rs.getString("x_descripcion"));
-                        k.setNombrePerfil(rs.getString("nombrePerfil"));
-                        lista1.add(k);
-//                    countPerson++;
-                    }
-                }
+                userId = rs.getInt("n_persona");
             }
 
         } catch (SQLException e) {
             // closeConexion(username, sesionId);
-            System.out.println("Error: ban Colegiado " + e);
+            System.out.println("Error: validateUser " + e);
         }
 
-        return lista1;
+        return userId;
     }
 
 }

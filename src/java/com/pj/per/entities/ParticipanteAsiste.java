@@ -173,6 +173,10 @@ public class ParticipanteAsiste {
     public void setC_aud_mcaddr(String c_aud_mcaddr) {
         this.c_aud_mcaddr = c_aud_mcaddr;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return "ParticipanteAsiste{" + "n_ano=" + n_ano + ", n_agenda=" + n_agenda + ", n_persona=" + n_persona + ", f_registro=" + f_registro + ", x_observacion=" + x_observacion + ", l_activo=" + l_activo + ", n_orden=" + n_orden + ", n_asiste=" + n_asiste + ", n_rechazo=" + n_rechazo + ", f_rechazo=" + f_rechazo + ", x_rechazo=" + x_rechazo + ", f_aud=" + f_aud + ", b_aud=" + b_aud + ", c_aud_uid=" + c_aud_uid + ", c_aud_uidred=" + c_aud_uidred + ", c_aud_pc=" + c_aud_pc + ", c_aud_ip=" + c_aud_ip + ", c_aud_mcaddr=" + c_aud_mcaddr + '}';
+    }
+
 }
