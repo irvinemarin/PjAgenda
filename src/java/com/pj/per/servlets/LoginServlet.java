@@ -44,11 +44,11 @@ public class LoginServlet extends HttpServlet {
                 int idUsuario = LoginDao.getInstance().validateUser(request.getParameter("username"), request.getParameter("clave"), "");
 
                 if (idUsuario >= 1) {
-                    HttpSession se = request.getSession();
+                    HttpSession se = request.getSession(true);
                     se.setAttribute("userName", request.getParameter("username"));
                     se.setAttribute("clave", request.getParameter("clave"));
                     se.setAttribute("userId", idUsuario);
-                    response.getWriter().write(new Gson().toJson("1"));
+                    response.getWriter().write(new Gson().toJson("1")); 
 
                 } else {
                     response.getWriter().write(new Gson().toJson("0"));

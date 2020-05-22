@@ -8,6 +8,7 @@ var CLIENT_ID = '646797906244-3mk9qh6gjop3bc23j2lv40vele4v3kop.apps.googleuserco
 var API_KEY = 'AIzaSyBhglUzy8opk0uA85VQjMJQ6Di00fx6sx8';
 var profile;
 var StringDatos; //almacena los email para registrar
+var listInvitados;//Almacena los npersons
 var data_read_updte; //almacena los email para update
 
 // Array of API discovery doc URLs for APIs used by the quickstart
@@ -24,6 +25,8 @@ var buttonBorrar = document.getElementById('borrarEvent_button');
  *  On load, called to load the auth2 library and API client library.
  */
 function handleClientLoad() {
+
+
     gapi.load('client:auth2', initClient);
 }
 
@@ -106,8 +109,19 @@ function ListEventFullCalendar() {
             center: 'title',
             right: 'dayGridMonth, listYear'
         },
+        timeZone: 'UTC',
+        locale: 'es',
         displayEventTime: true, // don't show the time column in list view
+        dateClick: function (arg) {
 
+            var date = arg.date.getUTCDate() + "/" + (arg.date.getMonth() + 1) + "/" + arg.date.getUTCFullYear();
+
+            var dateBD = arg.date.getUTCFullYear() + "/" + (arg.date.getMonth() + 1) + "/" + arg.date.getUTCDate();
+
+            document.getElementById("txtDateCurrent").innerHTML = date;
+            setListnerListaAgendas(dateBD);
+            console.log(dateBD);
+        },
         // THIS KEY WON'T WORK IN PRODUCTION!!!
         // To make your own Google API key, follow the directions here:
         googleCalendarApiKey: API_KEY,
@@ -176,7 +190,10 @@ function EventSaveCalendarApi() {
     f_checkSelectsDB("#selt_salaAdudiencia");
     f_checkSelectsDB("#selt_tipoAudiencia");
     //f_checkSelectsDB("#selt_agendaParent");
+
+
     if (validarCampos(1) && errors == 0) {
+
         var AgendaItem = {
 
             x_titulo: vr_titulo,
@@ -184,21 +201,32 @@ function EventSaveCalendarApi() {
             f_inicio: vr_fechaI,
             h_in: vr_horaI,
             h_fin: vr_horaF,
-//                        fechaIR: vr_fechaIR,
-//                        fechaFR: vr_fechaFR,
-//                        horaIR: vr_horaIR,
-//                        horaFR: vr_horaFR,
+//          fechaIR: vr_fechaIR,
+//          fechaFR: vr_fechaFR,
+//          horaIR: vr_horaIR,
+//          horaFR: vr_horaFR,
             n_tipo_agenda: vr_selt_tipoAgenda,
-//                        estadoAgenda: vr_estadoAgenda,
+//          estadoAgenda: vr_estadoAgenda,
             n_sala_audiencia: vr_selt_salaAdudiencia,
             n_tipo_audiencia: vr_tipoAudiencia,
             n_agenda_pad: vr_selt_agendaParent,
-            n_tododia: vr_cbox_allday
+            n_tododia: vr_cbox_allday,
+            //invitados: {invitadosSelected}
+
         };
         f_onSaveItemAgenda(AgendaItem);
 
     }
 }
+
+$('#text-invitados').on('change', function () {
+    var selected = $(this).find("option:selected");
+    var arrSelected = [];
+    selected.each(function () {
+        arrSelected.push($(this).val());
+    });
+    console.log("arrSelected : " + arrSelected);
+});
 
 //function para listar datos de un evento
 function EventReadCalendarApi(idcalendar) {
@@ -333,9 +361,12 @@ $("#text-invitados2").on('change', function () {
     var val = $(this).val();
     data_read_updte = val;
 });
+
 //funcion que optiene los datos para registar
 $("#text-invitados").on('change', function () {
     var val = $(this).val();
+
+
     StringDatos = val;
 });
 //funcion para cambiar formato de fechas a YYYY-MM-DD
@@ -436,15 +467,19 @@ $("#saveEvent_button").on("click", function () {
     f_getListTipoAgenda();
     f_getListTipoAud();
 //    f_getListAgendaPadre();
-    f_getListInvitados();
+//    f_getListInvitados();
 //    f_getListEstadoAgenda();
+    f_getListGrupoPersona();
 
 });
 
 
 var SavedDB = false;
 function f_onSaveItemAgenda(AgendaItem) {
-//    console.table(AgendaItem);
+    //    console.table(AgendaItem);
+
+
+
 
 
     var params = {Agenda: JSON.stringify(AgendaItem)};
@@ -567,22 +602,10 @@ function f_getListEstadoAgenda() {
             var rd = response;
             htmlItem += '<option value="-1">--Seleccionar--</option>';
             for (var i in rd) {
-                htmlItem += '<option class="persona_invitado" data-idpersona="' + rd[i].n_persona + '" value="' + rd[i].n_estado_agenda + '">' + rd[i].l_activo + '</option>';
+                htmlItem += '<option  value="' + rd[i].n_estado_agenda + '">' + rd[i].l_activo + '</option>';
             }
+            listInvitados = new Array();
             $("#selt_estadoAgenda").append(htmlItem);
-
-            var listPersonasInvitadas = new Array();
-            $(".persona_invitado").on("click", function (parameters) {
-
-
-                var n_personaSelected = $(this).data("idpersona");
-                alertify.warning("n_persona " + n_personaSelected);
-                listPersonasInvitadas.push(n_personaSelected);
-
-            });
-
-
-
         },
         error: function (jqXHR, exception) {
             alertify.warning('error f_getListEstadoAgenda !');
@@ -668,11 +691,11 @@ function f_getListAgendaPadre() {
 
 
 }
-function f_getListInvitados() {
+function f_getListInvitados(n_grupo) {
 
 
     var action = "ags?action=op03";
-    var params = {};
+    var params = {n_grupo: n_grupo};
     $.ajax({
         url: action,
         method: 'POST',
@@ -683,7 +706,7 @@ function f_getListInvitados() {
             var rd = response;
             htmlItem += '<option value="-1">--Seleccionar--</option>';
             for (var i in rd) {
-                htmlItem += '<option value="' + rd[i].x_correo + '">' + rd[i].x_correo + '</option>';
+                htmlItem += '<option value="' + rd[i].x_correo + '"  data-n_person="' + rd[i].n_persona + '" >' + rd[i].x_correo + '</option>';
             }
             $("#text-invitados").append(htmlItem);
 
@@ -696,6 +719,189 @@ function f_getListInvitados() {
 
 
 }
+
+
+$(".reloadSelect").on("click", function () {
+
+    var idReload = $(this).attr('id');
+    console.log("idReload " + idReload);
+    switch (idReload) {
+        case "op06":
+            f_getListTipoAgenda();
+            break;
+        case "op07":
+            f_getListSalaAud();
+            break;
+        case "op08":
+            f_getListTipoAud();
+            break;
+        case "op09":
+            f_getListGrupoPersona();
+            break;
+
+        default:
+
+            break;
+    }
+//    $("#" + idElementRechazo).prop('checked', false);
+//    $("#label_" + idElementRechazo).removeClass("text-rechazed");
+});
+
+
+function f_getListGrupoPersona() {
+
+
+    var action = "ags?action=op09";
+    var params = {};
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+            var htmlItem = "";
+            $("#selt_grupoPersona").empty();
+            var rd = response;
+            htmlItem += '<option value="-1">--Seleccionar--</option>';
+            for (var i in rd) {
+                htmlItem += '<option value="' + rd[i].n_grupo_per + '"  >' + rd[i].x_descripcion + '</option>';
+            }
+            $("#selt_grupoPersona").append(htmlItem);
+
+
+            $("#selt_grupoPersona").on("change", function () {
+
+                console.log("selt_grupoPersona : " + $("#selt_grupoPersona").val());
+
+                if ($("#selt_grupoPersona").val() != -1) {
+                    f_getListInvitados($("#selt_grupoPersona").val());
+                } else {
+                    $("#text-invitados").empty();
+                }
+            });
+
+
+
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_getListInvitados !');
+        }
+    });
+
+}
+
+
+function setListnerListaAgendas(parameters) {
+    getListaAgendas2(parameters);
+}
+
+
+function getListaAgendas2(dateSelected) {
+
+
+    var action = "ags?action=op01";
+    var params = {
+        dateSelected: dateSelected
+    };
+    $.ajax({
+        url: action,
+        method: 'POST',
+        data: params,
+        success: function (response) {
+
+
+            if (response != -2 || response != "-2") {
+                var htmlItem = "";
+                $("#divContentAgendas").empty();
+                var rd = response;
+//                console.table(response);
+                var count = 1;
+                for (var i in rd) {
+                    htmlItem += ' <div class="col-sm-12">';
+                    htmlItem += '   <div class=" card border-secondary mb-3" id="div_customSwitch_' + i + '" >';
+                    htmlItem += '       <div class="card-header">' + count + ' ' + rd[i].x_titulo + '</div>';
+                    htmlItem += '      <div class="card-body ">';
+                    htmlItem += '           <div class="custom-control custom-switch">';
+                    htmlItem += '               <input type="checkbox" class="custom-control-input swichRechazar" id="customSwitch_' + i + '" \n\
+                                                    data-nagenda="' + rd[i].n_agenda + '"\n\
+                                                     data-nano="' + rd[i].n_ano + '">';
+                    htmlItem += '               <label class="custom-control-label " id="label_customSwitch_' + i + '" for="customSwitch_' + i + '"  data-objagenda="' + rd[i] + '">RECHAZAR</label>';
+                    htmlItem += '           </div>';
+                    htmlItem += '          <h6 class="card-title text-primary"> ' + rd[i].x_descripcion + '</h6>';
+                    htmlItem += '          <span class="card-text ">' + rd[i].f_inicio + '</span> - ';
+                    htmlItem += '          <span class="card-text ">' + rd[i].f_fin + '</span>';
+                    htmlItem += '          <a href="#" id="btn_customSwitch_' + i + '" class="col-md-12 btn btn-primary">\n\
+                                                    <svg class="bi bi-camera-video-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">"\n\
+                                                        <path d="M2.667 3h6.666C10.253 3 11 3.746 11 4.667v6.666c0 .92-.746 1.667-1.667 1.667H2.667C1.747 13 1 12.254 1 11.333V4.667C1 3.747 1.746 3 2.667 3z"/>"\n\
+                                                        <path d="M7.404 8.697l6.363 3.692c.54.313 1.233-.066 1.233-.697V4.308c0-.63-.693-1.01-1.233-.696L7.404 7.304a.802.802 0 000 1.393z"/>"\n\
+                                                    </svg> \n\
+                                                    Unirse a Videollamada</a>';
+                    htmlItem += '      </div>';
+                    htmlItem += '  </div>';
+                    htmlItem += '</div>';
+                    count++;
+                }
+
+
+
+
+                $("#divContentAgendas").append(htmlItem);
+                $(".swichRechazar").on("change", function (e) {
+                    n_agenda = $(this).data("nagenda");
+                    n_ano = $(this).data("nano");
+                    idElementRechazo = $(this).attr('id');
+                    alertify.success("idElementRechazo " + idElementRechazo);
+                    if ($(this).is(":checked") === true)
+                    {
+                        $("#label_" + idElementRechazo).addClass("text-rechazed");
+                        $("#div_" + idElementRechazo).removeClass("border-secondary");
+                        $("#div_" + idElementRechazo).addClass("bg-warning");
+                        $("#btn_" + idElementRechazo).hide();
+                        console.log("danger");
+//                        $("label").find("[for='" + idElementRechazo + "']").addClass("text-danger");
+                        $("#modalRechazar").modal('show');
+                    } else {
+                        console.log("Secondary");
+                        $("#div_" + idElementRechazo).removeClass("border-danger");
+                        $("#div_" + idElementRechazo).addClass("border-secondary");
+                        $("#label_" + idElementRechazo).addClass("text-rechazed");
+                    }
+                });
+            } else {
+                window.location.replace("login.html");
+            }
+
+
+        },
+        error: function (jqXHR, exception) {
+            alertify.warning('error f_getListInvitados !');
+        }
+    });
+}
+
+
+
+var n_agenda = 0;
+var n_ano = 0;
+var idElementRechazo = 0;
+$("#btnRecharzar").on("click", function () {
+    $("#btnRecharzar").addClass("disbled");
+
+
+    if ($("#txtDescripcionRechazo").val() != "") {
+        f_updateRechazarAgenda();
+    } else {
+        $("#txtDescripcionRechazo").addClass('is-invalid');
+    }
+
+
+});
+$("#btnCancelRecharzar").on("click", function () {
+
+    $("#" + idElementRechazo).prop('checked', false);
+    $("#label_" + idElementRechazo).removeClass("text-rechazed");
+    $("#div_" + idElementRechazo).removeClass("border-danger");
+    $("#div_" + idElementRechazo).addClass("border-secondary");
+});
 
 // });
 

@@ -43,7 +43,7 @@ public class AgendaDao {
         return INSTANCE;
     }
 
-    public List<ParticipanteAgenda> getParticipanteAgenda() {
+    public List<ParticipanteAgenda> getParticipanteAgenda(String n_grupoPersona) {
         List<ParticipanteAgenda> list = new ArrayList<>();
 
         try {
@@ -59,8 +59,8 @@ public class AgendaDao {
                     + "               from  participante_agenda pag "
                     + "                     inner join rol_persona rop on pag.n_persona=rop.n_persona "
                     + "                     left join grupo_personas gpe on gpe.n_grupo_per=rop.n_grupo_per "
-                    + "                     where pag.l_activo='1' "
-                    //+ "where rop.n_grupo_per=1"                    
+                    + "               where pag.l_activo='1' "
+                    + "                     and rop.n_grupo_per=" + n_grupoPersona + ""
                     + "");
             rs = ps.executeQuery();
 
@@ -87,14 +87,20 @@ public class AgendaDao {
 
     }
 
-    public List<Agenda> getAgendas(String userData) {
+    public List<Agenda> getAgendas(String dateSelected) {
+        String dateParam = "";
+        if ("today".equals(dateSelected)) {
+            dateParam = getDateToday();
+        } else {
+            dateParam = dateSelected;
+        }
 
         List<Agenda> list = new ArrayList<>();
 
         try {
             cx = Conexion.getInstanceConexion();
             ps = cx.prepareStatement("Select * from Agenda "
-                    + " where TO_DATE(to_char(f_inicio,'YYYY-MM-DD'),'YYYY-MM-DD') = to_timestamp('" + getDateToday() + "', 'YYYY-MM-DD') ");
+                    + " where TO_DATE(to_char(f_inicio,'YYYY-MM-DD'),'YYYY-MM-DD') = to_timestamp('" + dateParam + "', 'YYYY-MM-DD') ");
             rs = ps.executeQuery();
 
             int positionrow = 0;
@@ -106,9 +112,9 @@ public class AgendaDao {
                 k.setN_agenda(rs.getInt("n_agenda"));
                 k.setX_titulo(rs.getString("x_titulo"));
                 k.setX_descripcion(rs.getString("x_descripcion"));
-                k.setF_inicio(rs.getString("f_inicio"));
+                k.setF_inicio("Hora Inicio : " + rs.getString("f_inicio").substring(10, 16));
                 k.setF_inicio_real(rs.getString("f_inicio_real"));
-                k.setF_fin(rs.getString("f_fin"));
+                k.setF_fin("Hora Final : " + rs.getString("f_fin").substring(10, 16));
                 k.setF_fin_real(rs.getString("f_fin_real"));
 //                k.setN_agenda_pad(rs.getInt("x_agenda_pad"));
 //                k.setX_agenda_pad(rs.getString("x_agenda_pad"));
@@ -186,13 +192,14 @@ public class AgendaDao {
         try {
             list = new ArrayList<>();
             cx = Conexion.getInstanceConexion();
-            ps = cx.prepareStatement("");
+            ps = cx.prepareStatement("Select * from grupo_personas where l_activo='1'");
             rs = ps.executeQuery();
 
-            int positionrow = 0;
             while (rs.next()) {
-                positionrow++;
+
                 GrupoPersonas k = new GrupoPersonas();
+                k.setN_grupo_per(rs.getInt("n_grupo_per"));
+                k.setX_descripcion(rs.getString("x_descripcion"));
 
                 list.add(k);
 
@@ -320,7 +327,9 @@ public class AgendaDao {
             ResultSet rst1 = st1.executeQuery(sql);
             rst1.next();
 
-            insert = insertarDetalle(agendaItem, rst1);
+            for (ParticipanteAsiste item : agendaItem.getInvitados()) {
+                insert = insertarDetalle(item.getN_persona(), rst1);
+            }
             if (insert == 0) {
                 cx.rollback();
             } else {
@@ -329,6 +338,7 @@ public class AgendaDao {
 
             //cx.close();
         } catch (SQLException e) {
+
             System.out.println("Error: " + e.getLocalizedMessage());
             System.out.println("Error: " + e.toString());
         }
@@ -336,13 +346,14 @@ public class AgendaDao {
         return insert;
     }
 
-    private int insertarDetalle(Agenda agendaItem, ResultSet rst1) {
+    private int insertarDetalle(int n_perona, ResultSet rst1) {
+        System.out.println("n_person - " + n_perona);
         int insert = 0;
         try {
             String sql2 = "INSERT INTO participante_asiste(n_ano,n_agenda,n_persona,"
                     + "f_registro,n_rechazo,"
                     + "f_aud,  c_aud_uid, c_aud_uidred)"
-                    + "values (" + rst1.getInt("n_agenda") + "," + rst1.getInt("n_ano") + ",1,"
+                    + "values (" + rst1.getInt("n_agenda") + "," + rst1.getInt("n_ano") + "," + n_perona + ","
                     + "'" + getDateToday() + "',0,"
                     + "'" + getDateToday() + "','1111','21312'"
                     + ")RETURNING n_agenda ";

@@ -5,6 +5,8 @@
     <head>
         <title>Calendario Poder Judicial</title>
         <meta charset="utf-8" />
+
+        <link rel="shortcut icon" href="img/icon.png">
         <link href='lib/fullcalendar/core/main.css' rel='stylesheet' />
         <link href='lib/fullcalendar/daygrid/main.css' rel='stylesheet' />
         <link rel="stylesheet" href="lib/fullcalendar/list/main.css">
@@ -34,7 +36,7 @@
             }
 
             body{
-                background: #e2e2e2;    
+                background: #e1e1e1;   
             }
             a {
                 text-decoration: none;
@@ -78,7 +80,7 @@
                 </ul>
                 <div class="nav-item dropdown">
                     <a  id="txtUsername" class="nav-link dropdown-toggle text-white" style="margin-right: 20px;" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Usuario01
+                        NoLogin
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <!--<a class="dropdown-item" href="#">opcion 0</a>
@@ -96,27 +98,25 @@
 
 
 
-    <main>
+    <main class="container card">
 
-        <div class="row card-body"> 
-            <div class="col-sm-2 col-lg-2" >
-                <p class="" id="txtUserGmail"> @gmail.com</p> 
-                <button class="btn btn-success" id="authorize_button" style="display: none;">Iniciar Calendario Google</button>
-                <button class="btn btn-success" id="signout_button" style="display: none;">Salir de Calendario Google</button>
-                <br>
-                <p class="" id="msjGmail">Para ver y reazliar acciones en GoogleCalendar y GoogleMeets es necesario Iniciar sesion en su cuenta de Google</p> 
-                <p class="" id="msjGmail2">Si no se muestra ninguna reunión Pendiente, verifique que su calendario sea publico en su cuenta de Google</p> 
-                <p class="" id="msjGmail3"></p> 
+        <div class=" row card-body"> 
 
-            </div>
 
 
             <div class="col-sm-3 col-lg-5" >
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Mis Eventos</a>
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Invitados</a>
+                        <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Rechazados</a>
+                    </div>
+                </nav>
 
                 <div class="">
                     <br>
                     <!--Add buttons to initiate auth sequence and sign out-->
-                    <h4>Reunión para hoy <span id="txtDateCurrent"></span></h4>   
+                    <h5>Eventos del <span id="txtDateCurrent"></span></h5>   
                     <button id="saveEvent_button" class="btn btn-success " data-toggle="modal" data-target="#exampleModalCenter">Agregar Nueva Reunion</button>
                     <br>
                     <script>
@@ -136,13 +136,24 @@
 
 
             </div>
-            <div class=" card col-sm-7 col-lg-5" >
-                <pre id="content" style="white-space: pre-wrap;"></pre>
+            <div class="col-sm-7 col-lg-7" >
+                <div class="row" >
+                    <div class="col-sm-4" >
+                        <p class="" id="txtUserGmail"> @gmail.com</p> 
+                        <button class="btn btn-success" id="authorize_button" style="display: none;">Iniciar Calendario Google</button>
+                        <button class="btn btn-warning" id="signout_button" style="display: none;">Salir de Calendario Google</button>
+                        <br>
+                    </div>
+                    <div class="col-sm-8" >
+                        <p class="" id="msjGmail">Para ver y reazliar acciones en GoogleCalendar y GoogleMeets es necesario Iniciar sesion en su cuenta de Google</p> 
+                        <p class="" id="msjGmail2">Si no se muestra ninguna reunión Pendiente, verifique que su calendario sea publico en su cuenta de Google</p> 
+                        <p class="" id="msjGmail3"></p> 
+                    </div>
+                </div>
 
-
-                <pre style="white-space: pre-wrap;"></pre>
-                <div id='calendar' style="margin: 0;"></div>
+                <div id='calendar' class="card" style="margin: 0;"></div>
             </div>  
+
         </div> 
 
 
@@ -218,16 +229,27 @@
 
 
 
-
                             <div class="form-group col-md-6">
-                                <label class="my-1 mr-2" for="selt_tipoAgenda">Tipo Agenda</label>
-                                <select class="custom-select my-1 mr-sm-2" id="selt_tipoAgenda">
-                                </select>
+
+                                <label class="my-1 mr-2" for="selt_grupoPersona">Tipo Agenda</label>
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend" style="padding-top: 4px;padding-bottom: 4px;">
+                                        <div class="input-group-text reloadSelect" id="op06"    ><svg class="bi bi-arrow-repeat" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M2.854 7.146a.5.5 0 00-.708 0l-2 2a.5.5 0 10.708.708L2.5 8.207l1.646 1.647a.5.5 0 00.708-.708l-2-2zm13-1a.5.5 0 00-.708 0L13.5 7.793l-1.646-1.647a.5.5 0 00-.708.708l2 2a.5.5 0 00.708 0l2-2a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd" d="M8 3a4.995 4.995 0 00-4.192 2.273.5.5 0 01-.837-.546A6 6 0 0114 8a.5.5 0 01-1.001 0 5 5 0 00-5-5zM2.5 7.5A.5.5 0 013 8a5 5 0 009.192 2.727.5.5 0 11.837.546A6 6 0 012 8a.5.5 0 01.501-.5z" clip-rule="evenodd"/>
+                                            </svg></div>
+                                    </div>
+                                    <select class="custom-select my-1 mr-sm-2" id="selt_tipoAgenda">
+                                    </select>
+
+                                </div>
+
                                 <div class="invalid-feedback">
                                     Seleccione Tipo Agenda.
                                 </div>
-
                             </div>
+
+
 
                             <!--
                            <div class="form-group col-md-6">
@@ -241,24 +263,49 @@
                            </div> -->
 
 
-
-
                             <div class="form-group col-md-6">
-                                <label class="my-1 mr-2" for="selt_tipoAudiencia">Tipo Audiencia</label>
-                                <select class="custom-select my-1 mr-sm-2" id="selt_tipoAudiencia">
-                                </select>
+
+                                <label class="my-1 mr-2" for="selt_grupoPersona">Tipo Audiencia</label>
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend" style="padding-top: 4px;padding-bottom: 4px;">
+                                        <div class="input-group-text reloadSelect" id="op08"    ><svg class="bi bi-arrow-repeat" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M2.854 7.146a.5.5 0 00-.708 0l-2 2a.5.5 0 10.708.708L2.5 8.207l1.646 1.647a.5.5 0 00.708-.708l-2-2zm13-1a.5.5 0 00-.708 0L13.5 7.793l-1.646-1.647a.5.5 0 00-.708.708l2 2a.5.5 0 00.708 0l2-2a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd" d="M8 3a4.995 4.995 0 00-4.192 2.273.5.5 0 01-.837-.546A6 6 0 0114 8a.5.5 0 01-1.001 0 5 5 0 00-5-5zM2.5 7.5A.5.5 0 013 8a5 5 0 009.192 2.727.5.5 0 11.837.546A6 6 0 012 8a.5.5 0 01.501-.5z" clip-rule="evenodd"/>
+                                            </svg></div>
+                                    </div>
+                                    <select class="custom-select my-1 mr-sm-2" id="selt_tipoAudiencia">
+                                    </select>
+
+                                </div>
+
                                 <div class="invalid-feedback">
                                     Seleccione Tipo Audiencia.
                                 </div>
                             </div>
+
                             <div class="form-group col-md-12">
+
                                 <label class="my-1 mr-2" for="selt_salaAdudiencia">Sala Audiencia</label>
-                                <select class="custom-select my-1 mr-sm-2" id="selt_salaAdudiencia">
-                                </select>
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend" style="padding-top: 4px;padding-bottom: 4px;">
+                                        <div class="input-group-text reloadSelect" id="op07"    ><svg class="bi bi-arrow-repeat" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M2.854 7.146a.5.5 0 00-.708 0l-2 2a.5.5 0 10.708.708L2.5 8.207l1.646 1.647a.5.5 0 00.708-.708l-2-2zm13-1a.5.5 0 00-.708 0L13.5 7.793l-1.646-1.647a.5.5 0 00-.708.708l2 2a.5.5 0 00.708 0l2-2a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd" d="M8 3a4.995 4.995 0 00-4.192 2.273.5.5 0 01-.837-.546A6 6 0 0114 8a.5.5 0 01-1.001 0 5 5 0 00-5-5zM2.5 7.5A.5.5 0 013 8a5 5 0 009.192 2.727.5.5 0 11.837.546A6 6 0 012 8a.5.5 0 01.501-.5z" clip-rule="evenodd"/>
+                                            </svg></div>
+                                    </div>
+                                    <select class="custom-select my-1 mr-sm-2" id="selt_salaAdudiencia">
+                                    </select>
+
+                                </div>
+
                                 <div class="invalid-feedback">
                                     Seleccione Sala Audiencia.
                                 </div>
                             </div>
+
+
+
+
                             <!--<div class="form-group col-md-12">
                                 <label class="my-1 mr-2" for="selt_agendaParent">Agenda Padre</label>
                                 <select class="custom-select my-1 mr-sm-2" id="selt_agendaParent">
@@ -296,6 +343,27 @@
                                 <input type="text" class="form-control timepicker" id="text-horaF">
                             </div>
                         </div>
+
+                        <div class="form-group col-md-12">
+
+                            <label class="my-1 mr-2" for="selt_grupoPersona">Grupo</label>
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend" style="padding-top: 4px;padding-bottom: 4px;">
+                                    <div class="input-group-text reloadSelect" id="op09"    ><svg class="bi bi-arrow-repeat" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M2.854 7.146a.5.5 0 00-.708 0l-2 2a.5.5 0 10.708.708L2.5 8.207l1.646 1.647a.5.5 0 00.708-.708l-2-2zm13-1a.5.5 0 00-.708 0L13.5 7.793l-1.646-1.647a.5.5 0 00-.708.708l2 2a.5.5 0 00.708 0l2-2a.5.5 0 000-.708z" clip-rule="evenodd"/>
+                                        <path fill-rule="evenodd" d="M8 3a4.995 4.995 0 00-4.192 2.273.5.5 0 01-.837-.546A6 6 0 0114 8a.5.5 0 01-1.001 0 5 5 0 00-5-5zM2.5 7.5A.5.5 0 013 8a5 5 0 009.192 2.727.5.5 0 11.837.546A6 6 0 012 8a.5.5 0 01.501-.5z" clip-rule="evenodd"/>
+                                        </svg></div>
+                                </div>
+                                <select class="custom-select my-1 mr-sm-2" id="selt_grupoPersona">
+                                </select>
+
+                            </div>
+
+                            <div class="invalid-feedback">
+                                Seleccione un grupo de Personas.
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label>Invitados</label>
                             <select id="text-invitados" multiple>
@@ -324,9 +392,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="rechazaraModalLongTitle">Rechazar Evento/Reunión</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+
                 </div>
                 <div class="modal-body">
 
@@ -351,7 +417,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal Insert-->
+    <!-- Modal Rechazar-->
 
     <!-- Modal ver detalles-->
     <div class="modal fade" id="Modaldetalle" tabindex="-1" role="dialog" aria-labelledby="ModaldetalleCenterTitle"
@@ -518,9 +584,9 @@
     <script src="lib/select-mulitple/dist/slimselect.js"></script>
     <script src="lib/moment/moment.js"></script>
     <script src="lib/sweetalert/dist/sweetalert2.min.js"></script>
+    <script src="agendas.js" type="text/javascript"></script>
     <script src="OpcionMultiple.js" type="text/javascript"></script>
     <script src="PoderJudicialCalendar.js"></script>
-    <script src="agendas.js" type="text/javascript"></script>
     <script async defer src="https://apis.google.com/js/api.js" onload="this.onload = function () {};
                             handleClientLoad()" onreadystatechange="if (this.readyState === 'complete') this.onload()">
     </script>
