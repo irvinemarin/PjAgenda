@@ -87,7 +87,7 @@ public class AgendaDao {
 
     }
 
-    public List<Agenda> getAgendas(String dateSelected) {
+    public List<Agenda> getParticipanteAgendas(String dateSelected, String idUsuario, String userName) {
         String dateParam = "";
         if ("today".equals(dateSelected)) {
             dateParam = getDateToday();
@@ -99,8 +99,14 @@ public class AgendaDao {
 
         try {
             cx = Conexion.getInstanceConexion();
-            ps = cx.prepareStatement("Select * from Agenda "
-                    + " where TO_DATE(to_char(f_inicio,'YYYY-MM-DD'),'YYYY-MM-DD') = to_timestamp('" + dateParam + "', 'YYYY-MM-DD') ");
+            ps = cx.prepareStatement("Select  	pas.n_rechazo, pas.n_persona , pag.x_nombre, ag.*  "
+                    + "from 		Agenda ag "
+                    + "inner join 	participante_asiste pas on ag.n_ano=pas.n_ano and ag.n_agenda=pas.n_agenda "
+                    + "inner join 	participante_agenda pag on pas.n_persona=pag.n_persona "
+                    + "where           TO_DATE(to_char(f_inicio,'YYYY-MM-DD'),'YYYY-MM-DD') = to_timestamp('" + dateParam + "', 'YYYY-MM-DD') "
+                    + "and 		pas.n_rechazo= 0 "
+                    + "and 		pas.n_persona=" + idUsuario);
+
             rs = ps.executeQuery();
 
             int positionrow = 0;
@@ -110,14 +116,18 @@ public class AgendaDao {
 
                 k.setN_ano(rs.getInt("n_ano"));
                 k.setN_agenda(rs.getInt("n_agenda"));
+                k.setRechazoPersonal(rs.getInt("n_rechazo"));
                 k.setX_titulo(rs.getString("x_titulo"));
                 k.setX_descripcion(rs.getString("x_descripcion"));
+                k.setX_meet_url(rs.getString("x_meet_url"));
                 k.setF_inicio("Hora Inicio : " + rs.getString("f_inicio").substring(10, 16));
                 k.setF_inicio_real(rs.getString("f_inicio_real"));
                 k.setF_fin("Hora Final : " + rs.getString("f_fin").substring(10, 16));
                 k.setF_fin_real(rs.getString("f_fin_real"));
 //                k.setN_agenda_pad(rs.getInt("x_agenda_pad"));
 //                k.setX_agenda_pad(rs.getString("x_agenda_pad"));
+
+                k.setInvitadosList(getPersonasAsisteByAgenda(rs.getInt("n_ano"), rs.getInt("n_agenda")));
 
                 list.add(k);
 
@@ -132,29 +142,47 @@ public class AgendaDao {
 
     }
 
-    public List<ParticipanteAsiste> getPersonasAsiste() {
-        List<ParticipanteAsiste> list = new ArrayList<>();
-
+    public List<ParticipanteAgenda> getPersonasAsisteByAgenda(int n_ano, int n_agenda) {
+        List<ParticipanteAgenda> list = new ArrayList<>();
+        System.out.println("n_ano :" + n_ano);
+        System.out.println("n_agenda :" + n_agenda);
         try {
 
+            String sql2 = "select        pag.n_persona, "
+                    + "                             pag.x_nombre,pag.x_apellido_paterno,"
+                    + "                             pag.x_apellido_materno,pag.x_correo,"
+                    + "                             pag.l_ind_sexo,"
+                    + "                             pas.n_ano,"
+                    + "                             ag.n_agenda "
+                    + "               from          participante_asiste pas"
+                    + "               inner join    agenda ag on pas.n_ano=ag.n_ano and pas.n_agenda=ag.n_agenda "
+                    + "               inner join    participante_agenda pag on pas.n_persona=pag.n_persona "
+                    + "               where         pas.n_agenda=" + n_agenda + " and pas.n_ano=" + n_ano;
+
+            Statement st2;
             cx = Conexion.getInstanceConexion();
-            ps = cx.prepareStatement("");
-            rs = ps.executeQuery();
+            st2 = cx.createStatement();
+            ResultSet rst2 = st2.executeQuery(sql2);
 
-            int positionrow = 0;
-            while (rs.next()) {
-                positionrow++;
-                ParticipanteAsiste k = new ParticipanteAsiste();
+            while (rst2.next()) {
 
+                ParticipanteAgenda k = new ParticipanteAgenda();
+                System.out.println("ParticipanteAgenda n_persona :" + rst2.getInt("n_persona"));
+                k.setN_persona(rst2.getInt("n_persona"));
+                k.setX_nombre(rst2.getString("x_nombre"));
+                k.setX_apellido_paterno(rst2.getString("x_apellido_paterno"));
+                k.setX_apellido_materno(rst2.getString("x_apellido_materno"));
+                k.setX_correo(rst2.getString("x_correo"));
+                k.setFullName(rst2.getString("x_apellido_paterno") + " " + rst2.getString("x_apellido_materno") + ", " + rst2.getString("x_nombre"));
                 list.add(k);
-
             }
             //cx.close();
 
         } catch (SQLException e) {
-            System.out.println("Error: " + e);
+            System.out.println("Error: getPersonasAsisteByAgenda " + e);
         }
 
+//        System.out.println("getInvitadosList :" + list.toString());
         return list;
     }
 
@@ -296,25 +324,22 @@ public class AgendaDao {
         return list;
     }
 
-    public int addAgenda(Agenda agendaItem) {
+    public int addAgenda(Agenda agendaItem, String urlMeet) {
 
         int insert = 0;
-        String sql = "INSERT INTO agenda(n_ano,n_agenda,"
+        String sql = "INSERT INTO agenda(n_ano,n_agenda,n_estado_agenda,"
                 + "f_registro, n_tipo_agenda,"
                 + "x_titulo, x_descripcion, "
                 + "f_inicio, f_fin,"
-                + "n_estado_agenda, "
-                + "n_tododia,"
+                + "n_tododia,x_meet_url,"
                 + "f_aud,  c_aud_uid, c_aud_uidred,"
                 + "n_sala_audiencia, n_tipo_audiencia)"
-                + "values ((select coalesce(MAX(n_agenda),0) from agenda)+1,(select coalesce(MAX(n_ano),0) from agenda)+1,"
-                //                + "values (2,2,"
+                + "values ((select coalesce(MAX(n_agenda),0) from agenda)+1,(select coalesce(MAX(n_ano),0) from agenda)+1,1,"
                 + "'" + getDateToday() + "'," + "'" + agendaItem.getN_tipo_agenda() + "',"
                 + "'" + agendaItem.getX_titulo() + "','" + agendaItem.getX_descripcion() + "',"
                 + "'" + agendaItem.getF_inicio() + " " + agendaItem.getH_in() + "',"
                 + "'" + agendaItem.getF_inicio() + " " + agendaItem.getH_fin() + "',"
-                + "1,"
-                + "'" + agendaItem.getN_tododia() + "',"
+                + "'" + agendaItem.getN_tododia() + "','" + urlMeet + "',"
                 + "'" + getDateToday() + "','1111','21312',"
                 + "'" + agendaItem.getN_sala_audiencia() + "','" + agendaItem.getN_tipo_audiencia() + "'"
                 + ")RETURNING n_agenda , n_ano";
@@ -339,8 +364,8 @@ public class AgendaDao {
             //cx.close();
         } catch (SQLException e) {
 
-            System.out.println("Error: " + e.getLocalizedMessage());
-            System.out.println("Error: " + e.toString());
+            System.out.println("Error: addAgenda " + e.getLocalizedMessage());
+            System.out.println("Error:  addAgenda " + e.toString());
         }
 
         return insert;
@@ -373,24 +398,34 @@ public class AgendaDao {
     }
 
     public int rechAgenda(ParticipanteAsiste parasis, int n_persona) {
-        int insert = 0;
+        int updateRechazo = 0;
         System.out.println("ParticipanteAsiste" + parasis.toString());
         String sql = "update participante_asiste set "
                 + "n_rechazo='" + parasis.getN_rechazo() + "', "
-                + "f_rechazo='" + getDateToday() + "' "
+                + "f_rechazo='" + getDateToday() + "', "
+                + "x_rechazo='" + parasis.getX_rechazo() + "' "
                 + ""
                 + "where        n_persona= '" + n_persona + "' "
                 + "and          n_ano= '" + parasis.getN_ano() + "' "
                 + "and          n_agenda= '" + parasis.getN_agenda() + "' "
-                + "       ";
+                + "RETURNING n_agenda";
+
         try {
+
             Statement st;
             cx = Conexion.getInstanceConexion();
+            cx.setAutoCommit(false);
             st = cx.createStatement();
             ResultSet rst = st.executeQuery(sql);
             rst.next();
 
-            insert = 1;
+            updateRechazo = rst.getRow();
+
+            if (updateRechazo == 0) {
+                cx.rollback();
+            } else {
+                cx.commit();
+            }
             //cx.close();
 
         } catch (SQLException e) {
@@ -398,7 +433,7 @@ public class AgendaDao {
             System.out.println("Error: " + e.toString());
         }
 
-        return insert;
+        return updateRechazo;
     }
 
     private String getDateToday() {
@@ -406,6 +441,62 @@ public class AgendaDao {
         Date date = new Date();
         String mtoday = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
         return mtoday;
+    }
+
+    public List<Agenda> getAgendasTabs(String tabNumber, String idUsuario, String userName) {
+        List<Agenda> list = new ArrayList<>();
+
+        int nrechazo = 0;
+        if ("2".equals(tabNumber)) {
+            nrechazo = 0;
+        } else if ("3".equals(tabNumber)) {
+            nrechazo = 1;
+        }
+
+        String SQL = "Select  pas.n_rechazo, pas.n_persona , pag.x_nombre, ag.*  "
+                + "from 	Agenda ag "
+                + "inner join 	participante_asiste pas on ag.n_ano=pas.n_ano and ag.n_agenda=pas.n_agenda "
+                + "inner join 	participante_agenda pag on pas.n_persona=pag.n_persona "
+                + "where 	pas.n_rechazo=" + nrechazo + " "
+                + "and 		pas.n_persona=" + idUsuario
+                + "and 		ag.n_estado_agenda=1";
+
+        try {
+            cx = Conexion.getInstanceConexion();
+            ps = cx.prepareStatement(SQL);
+
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Agenda k = new Agenda();
+
+                k.setN_ano(rs.getInt("n_ano"));
+                k.setN_agenda(rs.getInt("n_agenda"));
+                k.setRechazoPersonal(rs.getInt("n_rechazo"));
+                k.setX_titulo(rs.getString("x_titulo"));
+                k.setX_descripcion(rs.getString("x_descripcion"));
+                k.setX_meet_url(rs.getString("x_meet_url"));
+                k.setF_inicio("Hora Inicio : " + rs.getString("f_inicio").substring(10, 16));
+                k.setF_inicio_real(rs.getString("f_inicio").substring(0, 10));
+                k.setF_fin("Hora Final : " + rs.getString("f_fin").substring(10, 16));
+                k.setF_fin_real(rs.getString("f_fin_real"));
+//                k.setN_agenda_pad(rs.getInt("x_agenda_pad"));
+//                k.setX_agenda_pad(rs.getString("x_agenda_pad"));
+                k.setInvitadosList(getPersonasAsisteByAgenda(rs.getInt("n_ano"), rs.getInt("n_agenda")));
+//                System.out.println("getInvitadosList :" + getPersonasAsisteByAgenda(rs.getInt("n_ano"), rs.getInt("n_agenda")));
+
+                list.add(k);
+
+            }
+            //cx.close();
+
+        } catch (SQLException e) {
+            System.out.println("Error: " + e);
+        }
+
+        return list;
+
     }
 
 }

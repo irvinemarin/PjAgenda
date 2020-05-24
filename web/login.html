@@ -1,141 +1,85 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en" class="fullscreen-bg">
 
     <head>
-        <meta charset='utf-8'>
+        <title>Login | Agendas Web</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <!-- VENDOR CSS -->
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/vendor/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="assets/vendor/linearicons/style.css">
+        <link rel="stylesheet" href="assets/vendor/toastr/toastr.min.css">
+        <!-- MAIN CSS -->
+        <link rel="stylesheet" href="assets/css/main.css">
+        <!-- FOR DEMO PURPOSES ONLY. You should remove this in your project -->
+        <link rel="stylesheet" href="assets/css/demo.css">
+        <!-- GOOGLE FONTS -->
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+        <!-- ICONS -->
+        <link rel="shortcut icon" type="image/png" href="assets/img/iconPj.png" />
 
-        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-        <title>Login </title>
-        <meta name='viewport' content='width=device-width, initial-scale=1'>
-        <link href="iconfont/material-icons.css" rel="stylesheet" type="text/css"/>
-        <link rel='stylesheet' href='materializecss/css/materialize.min.css' type='text/css' media='screen' />
-        <link href="materializecss/css/login_seguridad.css" rel="stylesheet" type="text/css"/>
-        <link rel="icon" src="img/icon.png" alt=""/>
+        <link href="lib/alertify/css/alertify.min.css" rel="stylesheet" type="text/css"/>
+
     </head>
 
-    <body class="background-gradient">
-        <div class="row">
-            <div class="col s12 col m6 col l4 offset-m3 offset-l4 " style="margin-top: 5% ; ">
-                <img  class="responsive-img" src="img/logo-pj.png"/>
-                <div class="card ">
-                    <div class="card-image waves-effect waves-block waves-light">
-                        <img class="activator " width="200" height="400" src="img/pj_foto.jpg"/>
-                    </div>
-                    <div class="card-content">
-                        <span class="card-title activator grey-text text-darken-4">Poder Judicial Del Perú<i
-                                class="material-icons right">send</i></span>
-                        <!-- <p><a href="#">This is a link</a></p> -->
-                    </div>
-                    <div class="card-reveal">
-                        <span class="card-title grey-text text-darken-4">
-                            <i class="material-icons right">close</i>
-                            Iniciar Sesion</span>
-                        <div class="">
-
-                            <form class="col s12 ">
-                                <div class="row">
-                                    <div class="row">
-                                        <div class="input-field col s6 offset-s3">
-                                            <input id="txtUsername"  style="text-transform: uppercase;" placeholder="Ingrese su Usuario" type="text" class="validate">
-                                            <label for="txtUsername" >Usuario</label>
+    <body>
+        <!-- WRAPPER -->
+        <div id="wrapper">
+            <div class="vertical-align-wrap">
+                <div class="vertical-align-middle">
+                    <div class="auth-box ">
+                        <div class="left">
+                            <div class="content">
+                                <div class="header">
+                                    <div class="logo text-center"><img src="assets/img/logo-dark.png" alt="Klorofil Logo"></div>
+                                    <p class="lead">Ingrese a su cuenta</p>
+                                </div>
+                                <div class="form-auth-small" action="index.php">
+                                    <div class="form-group">
+                                        <label for="signin-email" class="control-label sr-only">Email</label>
+                                        <input type="email" class="form-control" id="txtUsername" value="" placeholder="usuario">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="signin-password" class="control-label sr-only">Password</label>
+                                        <input type="password" class="form-control" id="txtClave" value="" placeholder="Password">
+                                    </div>
+                                    <div class="input-field col s6 offset-s3" style="margin-bottom: 10px;">
+                                        <span class="center" >Verificando si eres humano</span> <br>
+                                        <div class="btn float-left"  id="captcha">
                                         </div>
-                                        <div class="input-field col s6 offset-s3">
-                                            <input id="txtClave" placeholder="Ingrese su Clave" type="password" class="validate">
-                                            <label for="txtClave" >Clave</label>
-                                        </div>
+                                        <a id="btnReloadCodigo" class="btn btn-primary float-right">Recargar codigó</a>
+                                    </div>
+                                    <div class="input-field col s6 offset-s3" >
+                                        <input id="txtCaptcha" placeholder="Ingrese el Codigo que se muestra Arriba" type="text" class="form-control">
 
-                                        <div class="input-field col s6 offset-s3">
-
-                                            <span >Verificando si eres humano</span> <a id="btnReloadCodigo"  class="btn-floating btn-small waves-effect waves-light green tooltipped right" 
-                                                                                        data-position="top" 
-                                                                                        data-delay="50" 
-                                                                                        data-tooltip="Recargar codigo" 
-                                                                                        ><i class="material-icons">cached</i></a><br>
-                                            <div id="captcha">
-                                            </div>
-
-                                        </div>
-                                        <div class="input-field col s6 offset-s3">
-                                            <input id="txtCaptcha" placeholder="Ingrese el Codigo que se muestra Arriba" type="text" class="validate">
-                                            <label for="txtCaptcha" >Código Captcha</label>
-                                        </div>
                                     </div>
 
 
-                                    <a id="btnClear" class="btn-floating btn-large waves-effect waves-light red tooltipped" 
-                                       data-position="top" 
-                                       data-delay="50" 
-                                       data-tooltip="Limpiar Datos" 
-                                       style="margin-top: 20px;" ><i class="material-icons">delete</i></a>
-
-                                    <a id="btnSingIn" class="btn-floating btn-large waves-effect waves-light blue right tooltipped" 
-                                       data-position="top" 
-                                       data-delay="50" 
-                                       data-tooltip="Iniciar Sesion" 
-                                       style="margin-top: 20px;" ><i class="material-icons">send</i></a>
-
-
+                                    <a  id="btnSingIn" type="submit" class="btn btn-primary btn-lg btn-block">LOGIN</a>
                                 </div>
-                            </form>
-
-
+                            </div>
                         </div>
+                        <div class="right">
+                            <div class="overlay"></div>
+                            <div class="content text">
+                                <h1 class="heading">Sistema de Gestión de Agendas Web</h1>
+                                <p>Agendas Calendario</p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
                 </div>
             </div>
         </div>
-
-
-        <!-- Modal Structure -->
-        <div id="modal1" class="modal bottom-sheet">
-            <div class="modal-content">
-                <a href="#!" class="modal-action modal-close waves-effect waves-green btn red right">Cerrar</a>
-                <h4>APLICACIONES</h4>
-                <p>Aplicaciones disponibles para este usuario</p>
-
-                <ul class="collection" id="div_sistemasList">
-                    <li class="collection-item avatar">
-                        <img src="images/yuna.jpg" alt="" class="circle">
-                        <span class="title">Title</span>
-                        <p>First Line <br> Second Line </p>
-                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                    </li>
-                    <li class="collection-item avatar">
-                        <i class="material-icons circle">folder</i>
-                        <span class="title">Title</span>
-                        <p>First Line <br> Second Line </p>
-                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                    </li>
-                    <li class="collection-item avatar">
-                        <i class="material-icons circle green">assessment</i>
-                        <span class="title">Title</span>
-                        <p>First Line <br> Second Line </p>
-                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                    </li>
-                    <li class="collection-item avatar">
-                        <i class="material-icons circle red">play_arrow</i>
-                        <span class="title">Title</span>
-                        <p>First Line <br> Second Line </p>
-                        <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                    </li>
-                </ul>
-
-
-            </div>
-            <div class="modal-footer">
-
-            </div>
-        </div>
-
-
-        <script src="materializecss/js/global.js" type="text/javascript"></script>
+        <!-- END WRAPPER -->
         <script src="materializecss/js/jquery.min.js"></script>
-        <script src="materializecss/js/materialize.min.js"></script>
-
+        <script src="assets/vendor/toastr/toastr.min.js"></script>
+        <script src="assets/scripts/klorofil-common.js"></script>
+        <script src="lib/alertify/alertify.min.js" type="text/javascript"></script>
         <script src="materializecss/js/captcha.js" type="text/javascript"></script>
         <script src="materializecss/js/login.js" type="text/javascript"></script>
-
-
-    </body> 
+    </body>
 
 </html>

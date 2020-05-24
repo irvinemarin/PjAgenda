@@ -103,13 +103,13 @@ function appendPre(message) {
 function ListEventFullCalendar() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: ['interaction', 'dayGrid', 'List', 'googleCalendar'],
+        plugins: ['interaction', 'dayGrid', 'googleCalendar'],
         header: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth, listYear'
+            right: ' listYear'
         },
-        timeZone: 'UTC',
+        timeZone: 'UTC-5',
         locale: 'es',
         displayEventTime: true, // don't show the time column in list view
         dateClick: function (arg) {
@@ -118,9 +118,13 @@ function ListEventFullCalendar() {
 
             var dateBD = arg.date.getUTCFullYear() + "/" + (arg.date.getMonth() + 1) + "/" + arg.date.getUTCDate();
 
-            document.getElementById("txtDateCurrent").innerHTML = date;
+
+
+            $("#txtdscTab").empty();
+            $("#txtdscTab").append("Eventos del " + date);
+
             setListnerListaAgendas(dateBD);
-            console.log(dateBD);
+//            console.log(dateBD);
         },
         // THIS KEY WON'T WORK IN PRODUCTION!!!
         // To make your own Google API key, follow the directions here:
@@ -211,21 +215,32 @@ function EventSaveCalendarApi() {
             n_tipo_audiencia: vr_tipoAudiencia,
             n_agenda_pad: vr_selt_agendaParent,
             n_tododia: vr_cbox_allday,
-            //invitados: {invitadosSelected}
-
+            invitados: arrSelected
         };
         f_onSaveItemAgenda(AgendaItem);
 
     }
 }
+var arrSelected = [];
 
 $('#text-invitados').on('change', function () {
     var selected = $(this).find("option:selected");
-    var arrSelected = [];
+
+    var i = 0;
     selected.each(function () {
-        arrSelected.push($(this).val());
+        arrSelected[i] = {n_persona: $(this).data("n_person")};
+        i++;
     });
-    console.log("arrSelected : " + arrSelected);
+});
+
+$('#text-invitados2').on('change', function () {
+    var selected = $(this).find("option:selected");
+
+    var i = 0;
+    selected.each(function () {
+        arrSelected[i] = {n_persona: $(this).data("n_person")};
+        i++;
+    });
 });
 
 //function para listar datos de un evento
@@ -305,6 +320,7 @@ function EventUpateCalendarApi() {
         data_read_updte.forEach(function (item) {
             copyItems.push({'email': item});
         });
+
         //Formato de objecto para actualizar
         var eventToUpdate = {
             'summary': vr_titulo,
@@ -398,9 +414,7 @@ const displaySelect = new SlimSelect({
  EL SERVIDOR DEBE DEVOLVER EN FORMATO JSON PARA LUEGO OPTENER AQUI
  y recorrerlo en un for para luego agregarlo a un array[]*/
 const copyItems = [];
-copyItems.push({'email': 'lpage@example.com'});
-copyItems.push({'email': 'sbrin@example.com'});
-copyItems.push({'email': 'prueba@example.com'});
+
 //recorremos el array para agregar a otro array objet para luego agregar al select multiple
 const data = [];
 copyItems.forEach(function (item) {
@@ -412,6 +426,7 @@ $(".btnEditEventoCalendarApi").on("click", function () {
     var mstr_Id = $(this).data("id");
     $('#Modaldetalle').modal('hide');
     $('#ModalUpdate').modal('show');
+    f_getListGrupoPersona("2");
     EventReadCalendarApi(mstr_Id);
 });
 
@@ -479,81 +494,95 @@ function f_onSaveItemAgenda(AgendaItem) {
     //    console.table(AgendaItem);
 
 
-
-
-
-    var params = {Agenda: JSON.stringify(AgendaItem)};
-    var action = "ags?action=ins";
-//    var params = {};
-    $.ajax({
-        url: action,
-        method: 'POST',
-        data: params,
-        success: function (response) {
-
-            if (response == 1 || response == "1") {
-
-
-                //registrar en calendar
-                const copyItems = [];
-                //cambio de formato a la fechas
-                var fechaInicio = convertDateFormat(AgendaItem.f_inicio, 1);
-                //agraga datos a un array-object
-                StringDatos.forEach(function (item) {
-                    copyItems.push({'email': item});
-                });
-                //this object formato para registrar 
-                var event = {
-                    'summary': AgendaItem.x_titulo,
-                    'description': AgendaItem.x_descripcion,
-                    'start': {
-                        'dateTime': fechaInicio + 'T' + AgendaItem.h_in + ':00',
-                        'timeZone': 'America/Lima'
-                    },
-                    'end': {
-                        'dateTime': fechaInicio + 'T' + AgendaItem.h_fin + ':00',
-                        'timeZone': 'America/Lima'
-                    },
-                    'attendees': copyItems,
-                    'reminders': {
-                        'useDefault': false,
-                        'overrides': [
-                            {'method': 'email', 'minutes': 24 * 60},
-                            {'method': 'popup', 'minutes': 10}
-                        ]
-                    }
-                };
-                //this event save 
-                gapi.client.load('calendar', 'v3', function () {
-                    var request = gapi.client.calendar.events.insert({
-                        'calendarId': 'primary',
-                        "resource": event
-                    });
-                    // handle the response from our api call
-                    request.execute(function (resp) {
-                        if (resp.status == 'confirmed') {
-                            //cuando se registro correctamente
-
-                            $('#calendar').empty();
-                            ListEventFullCalendar();
-                            $('#exampleModalCenter').modal('hide');
-                            alertify.warning("Registrado Correctamente");
-                        } else {
-                            //cuando ocurrio un problema al registrar
-                            document.getElementById('content').innerHTML = "There was a problem. Reload page and try again.";
-                        }
-                    });
-                });
-            } else {
-                alertify.warning("No Se Logro Registrar");
-
-            }
-        },
-        error: function (jqXHR, exception) {
-            alertify.warning('error f_onSaveItemAgenda !');
-
-        }
+    //registrar en calendar
+    const copyItems = [];
+    //cambio de formato a la fechas
+    var fechaInicio = convertDateFormat(AgendaItem.f_inicio, 1);
+    //agraga datos a un array-object
+    StringDatos.forEach(function (item) {
+        copyItems.push({'email': item});
     });
+    //this object formato para registrar 
+    var event = {
+        'summary': AgendaItem.x_titulo,
+        'description': AgendaItem.x_descripcion,
+        'start': {
+            'dateTime': fechaInicio + 'T' + AgendaItem.h_in + ':00',
+            'timeZone': 'America/Lima'
+        },
+        'end': {
+            'dateTime': fechaInicio + 'T' + AgendaItem.h_fin + ':00',
+            'timeZone': 'America/Lima'
+        },
+        'attendees': copyItems,
+        'reminders': {
+            'useDefault': false,
+            'overrides': [
+                {'method': 'email', 'minutes': 24 * 60},
+                {'method': 'popup', 'minutes': 10}
+            ]
+        }
+    };
+    //this event save 
+    gapi.client.load('calendar', 'v3', function () {
+        var request = gapi.client.calendar.events.insert({
+            'calendarId': 'primary',
+            "resource": event
+        });
+        // handle the response from our api call
+        request.execute(function (respCalendar) {
+            if (respCalendar.status == 'confirmed') {
+                //cuando se registro correctamente
+
+//                console.table(JSON.stringify(resp));
+
+
+                $('#calendar').empty();
+                ListEventFullCalendar();
+                $('#exampleModalCenter').modal('hide');
+
+                var urlCalendarMeet = respCalendar.conferenceData.conferenceId;
+
+                var params = {Agenda: JSON.stringify(AgendaItem),
+                    urlCalendarMeet: urlCalendarMeet
+                };
+                var action = "ags?action=ins";
+                //    var params = {};
+                $.ajax({
+                    url: action,
+                    method: 'POST',
+                    data: params,
+                    success: function (response) {
+
+                        if (response == 1 || response == "1") {
+                            alertify.warning("Registrado Correctamente");
+                            getListaAgendas2("today");
+
+                        } else {
+                            alertify.warning("No Se Logro Registrar");
+                            EventDeleteCalendarApi(respCalendar.id);
+                        }
+                    },
+                    error: function (jqXHR, exception) {
+                        alertify.warning('error f_onSaveItemAgenda !');
+                        EventDeleteCalendarApi(respCalendar.id);
+                    }
+                });
+
+
+
+
+
+            } else {
+                //cuando ocurrio un problema al registrar
+                alertify.danger("Ha ocurrido un error, intentelo otra vez");
+            }
+        });
+    });
+
+
+
+
 }
 
 
@@ -691,7 +720,7 @@ function f_getListAgendaPadre() {
 
 
 }
-function f_getListInvitados(n_grupo) {
+function f_getListInvitados(n_grupo, invitados2) {
 
 
     var action = "ags?action=op03";
@@ -702,14 +731,23 @@ function f_getListInvitados(n_grupo) {
         data: params,
         success: function (response) {
             var htmlItem = "";
-            $("#text-invitados").empty();
-            var rd = response;
-            htmlItem += '<option value="-1">--Seleccionar--</option>';
-            for (var i in rd) {
-                htmlItem += '<option value="' + rd[i].x_correo + '"  data-n_person="' + rd[i].n_persona + '" >' + rd[i].x_correo + '</option>';
-            }
-            $("#text-invitados").append(htmlItem);
 
+            if (invitados2 == 2) {
+                $("#text-invitados2").empty();
+                var rd = response;
+                for (var i in rd) {
+                    htmlItem += '<option value="' + rd[i].x_correo + '"  data-n_person="' + rd[i].n_persona + '" >' + rd[i].x_correo + '</option>';
+                }
+                $("#text-invitados2").append(htmlItem);
+            } else {
+                $("#text-invitados").empty();
+                var rd = response;
+
+                for (var i in rd) {
+                    htmlItem += '<option value="' + rd[i].x_correo + '"  data-n_person="' + rd[i].n_persona + '" >' + rd[i].x_correo + '</option>';
+                }
+                $("#text-invitados").append(htmlItem);
+            }
 
         },
         error: function (jqXHR, exception) {
@@ -738,17 +776,20 @@ $(".reloadSelect").on("click", function () {
         case "op09":
             f_getListGrupoPersona();
             break;
+        case "op09_2":
+            f_getListGrupoPersona("2");
+            break;
 
         default:
 
             break;
     }
-//    $("#" + idElementRechazo).prop('checked', false);
-//    $("#label_" + idElementRechazo).removeClass("text-rechazed");
+//    $("#" + idElementRechazo2).prop('checked', false);
+//    $("#label_" + idElementRechazo2).removeClass("text-rechazed");
 });
 
 
-function f_getListGrupoPersona() {
+function f_getListGrupoPersona(update) {
 
 
     var action = "ags?action=op09";
@@ -759,25 +800,50 @@ function f_getListGrupoPersona() {
         data: params,
         success: function (response) {
             var htmlItem = "";
-            $("#selt_grupoPersona").empty();
-            var rd = response;
-            htmlItem += '<option value="-1">--Seleccionar--</option>';
-            for (var i in rd) {
-                htmlItem += '<option value="' + rd[i].n_grupo_per + '"  >' + rd[i].x_descripcion + '</option>';
-            }
-            $("#selt_grupoPersona").append(htmlItem);
-
-
-            $("#selt_grupoPersona").on("change", function () {
-
-                console.log("selt_grupoPersona : " + $("#selt_grupoPersona").val());
-
-                if ($("#selt_grupoPersona").val() != -1) {
-                    f_getListInvitados($("#selt_grupoPersona").val());
-                } else {
-                    $("#text-invitados").empty();
+            if (update == "2") {
+                $("#selt_grupoPersona2").empty();
+                var rd = response;
+                htmlItem += '<option value="-1">--Seleccionar--</option>';
+                for (var i in rd) {
+                    htmlItem += '<option value="' + rd[i].n_grupo_per + '"  >' + rd[i].x_descripcion + '</option>';
                 }
-            });
+
+
+                $("#selt_grupoPersona2").append(htmlItem);
+                $("#selt_grupoPersona2").on("change", function () {
+
+
+
+                    if ($("#selt_grupoPersona2").val() != -1) {
+                        f_getListInvitados($("#selt_grupoPersona2").val(), 2);
+                    } else {
+                        $("#text-invitados2").empty();
+                    }
+                });
+
+            } else {
+                $("#selt_grupoPersona").empty();
+                var rd = response;
+                htmlItem += '<option value="-1">--Seleccionar--</option>';
+                for (var i in rd) {
+                    htmlItem += '<option value="' + rd[i].n_grupo_per + '"  >' + rd[i].x_descripcion + '</option>';
+                }
+
+
+                $("#selt_grupoPersona").append(htmlItem);
+                $("#selt_grupoPersona").on("change", function () {
+
+
+
+                    if ($("#selt_grupoPersona").val() != -1) {
+                        f_getListInvitados($("#selt_grupoPersona").val());
+                    } else {
+                        $("#text-invitados").empty();
+                    }
+                });
+            }
+
+
 
 
 
@@ -816,20 +882,41 @@ function getListaAgendas2(dateSelected) {
 //                console.table(response);
                 var count = 1;
                 for (var i in rd) {
-                    htmlItem += ' <div class="col-sm-12">';
-                    htmlItem += '   <div class=" card border-secondary mb-3" id="div_customSwitch_' + i + '" >';
-                    htmlItem += '       <div class="card-header">' + count + ' ' + rd[i].x_titulo + '</div>';
-                    htmlItem += '      <div class="card-body ">';
-                    htmlItem += '           <div class="custom-control custom-switch">';
-                    htmlItem += '               <input type="checkbox" class="custom-control-input swichRechazar" id="customSwitch_' + i + '" \n\
+
+                    htmlItem += ' <div class="col-md-6 col-lg-4 ">';
+                    htmlItem += ' <div class="panel panel-headline">';
+                    htmlItem += ' <div class="panel-heading">';
+                    htmlItem += '    <h3 class="panel-title">' + count + ' -  ' + rd[i].x_titulo + '</h3>';
+
+                    htmlItem += '     <p class="panel-subtitle">' + rd[i].x_descripcion + '</p>';
+                    htmlItem += ' </div>';
+                    htmlItem += '   <div class="border-secondary mb-3" id="div_customSwitch_' + i + '" >';
+                    htmlItem += '       <div class="panel-title"></div>';
+                    htmlItem += '      <div class="panel-body ">';
+
+
+                    console.log("n_rechazo " + rd[i].n_rechazo)
+
+                    if (rd[i].n_rechazo != 1 || rd[i].n_rechazo != "1") {
+                        htmlItem += '           <div class="custom-control custom-switch">';
+                        htmlItem += '               <input type="checkbox" class="custom-control-input swichRechazar" id="customSwitch_' + i + '" \n\
                                                     data-nagenda="' + rd[i].n_agenda + '"\n\
                                                      data-nano="' + rd[i].n_ano + '">';
-                    htmlItem += '               <label class="custom-control-label " id="label_customSwitch_' + i + '" for="customSwitch_' + i + '"  data-objagenda="' + rd[i] + '">RECHAZAR</label>';
-                    htmlItem += '           </div>';
-                    htmlItem += '          <h6 class="card-title text-primary"> ' + rd[i].x_descripcion + '</h6>';
-                    htmlItem += '          <span class="card-text ">' + rd[i].f_inicio + '</span> - ';
-                    htmlItem += '          <span class="card-text ">' + rd[i].f_fin + '</span>';
-                    htmlItem += '          <a href="#" id="btn_customSwitch_' + i + '" class="col-md-12 btn btn-primary">\n\
+                        htmlItem += '               <label class="custom-control-label " id="label_customSwitch_' + i + '" for="customSwitch_' + i + '"  data-objagenda="' + rd[i] + '">RECHAZAR</label>';
+                        htmlItem += '           </div>';
+                    }
+
+
+
+                    htmlItem += '          <span class="panel-text ">' + rd[i].f_inicio + '</span> - ';
+                    htmlItem += '          <span class="panel-text ">' + rd[i].f_fin + '</span><br><br>';
+
+                    var rdItem = rd[i].invitadosList;
+                    for (var k in rdItem) {
+                        htmlItem += '      <span style=" font-size: 12px !important;" class="panel-text" > ' + rdItem[k].x_correo + ' </span><br>';
+                    }
+                    var urlCalendarMeet = "https://meet.google.com/".concat(rd[i].x_meet_url, "?authuser=0&amp;hs=122");
+                    htmlItem += '          <a href="' + urlCalendarMeet + '" target="_blank" rel="noreferrer noopener"  id="btn_customSwitch_' + i + '" class="col-md-12 btn btn-primary">\n\
                                                     <svg class="bi bi-camera-video-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">"\n\
                                                         <path d="M2.667 3h6.666C10.253 3 11 3.746 11 4.667v6.666c0 .92-.746 1.667-1.667 1.667H2.667C1.747 13 1 12.254 1 11.333V4.667C1 3.747 1.746 3 2.667 3z"/>"\n\
                                                         <path d="M7.404 8.697l6.363 3.692c.54.313 1.233-.066 1.233-.697V4.308c0-.63-.693-1.01-1.233-.696L7.404 7.304a.802.802 0 000 1.393z"/>"\n\
@@ -837,6 +924,7 @@ function getListaAgendas2(dateSelected) {
                                                     Unirse a Videollamada</a>';
                     htmlItem += '      </div>';
                     htmlItem += '  </div>';
+                    htmlItem += '</div>';
                     htmlItem += '</div>';
                     count++;
                 }
@@ -848,22 +936,23 @@ function getListaAgendas2(dateSelected) {
                 $(".swichRechazar").on("change", function (e) {
                     n_agenda = $(this).data("nagenda");
                     n_ano = $(this).data("nano");
-                    idElementRechazo = $(this).attr('id');
-                    alertify.success("idElementRechazo " + idElementRechazo);
+                    idElementRechazo2 = $(this).attr('id');
+                    alertify.success("idElementRechazo2 " + idElementRechazo2);
                     if ($(this).is(":checked") === true)
                     {
-                        $("#label_" + idElementRechazo).addClass("text-rechazed");
-                        $("#div_" + idElementRechazo).removeClass("border-secondary");
-                        $("#div_" + idElementRechazo).addClass("bg-warning");
-                        $("#btn_" + idElementRechazo).hide();
+                        $("#label_" + idElementRechazo2).addClass("text-rechazed");
+                        $("#div_" + idElementRechazo2).removeClass("border-secondary");
+                        $("#div_" + idElementRechazo2).addClass("bg-warning");
+                        $("#btn_" + idElementRechazo2).hide();
                         console.log("danger");
-//                        $("label").find("[for='" + idElementRechazo + "']").addClass("text-danger");
+//                        $("label").find("[for='" + idElementRechazo2 + "']").addClass("text-danger");
                         $("#modalRechazar").modal('show');
                     } else {
                         console.log("Secondary");
-                        $("#div_" + idElementRechazo).removeClass("border-danger");
-                        $("#div_" + idElementRechazo).addClass("border-secondary");
-                        $("#label_" + idElementRechazo).addClass("text-rechazed");
+                        $("#div_" + idElementRechazo2).removeClass("border-danger");
+                        $("#div_" + idElementRechazo2).addClass("border-secondary");
+                        $("#label_" + idElementRechazo2).addClass("text-rechazed");
+                        $("#btn_" + idElementRechazo2).show();
                     }
                 });
             } else {
@@ -880,28 +969,29 @@ function getListaAgendas2(dateSelected) {
 
 
 
-var n_agenda = 0;
-var n_ano = 0;
-var idElementRechazo = 0;
-$("#btnRecharzar").on("click", function () {
-    $("#btnRecharzar").addClass("disbled");
-
-
-    if ($("#txtDescripcionRechazo").val() != "") {
-        f_updateRechazarAgenda();
-    } else {
-        $("#txtDescripcionRechazo").addClass('is-invalid');
-    }
-
-
-});
+var n_agenda2 = 0;
+var n_ano2 = 0;
+var idElementRechazo2 = 0;
+//$("#btnRecharzar").on("click", function () {
+//    $("#btnRecharzar").addClass("disbled");
+//
+//
+//    if ($("#txtDescripcionRechazo").val() != "") {
+//        f_updateRechazarAgenda();
+//    } else {
+//        $("#txtDescripcionRechazo").addClass('is-invalid');
+//    }
+//
+//
+//});
 $("#btnCancelRecharzar").on("click", function () {
 
-    $("#" + idElementRechazo).prop('checked', false);
-    $("#label_" + idElementRechazo).removeClass("text-rechazed");
-    $("#div_" + idElementRechazo).removeClass("border-danger");
-    $("#div_" + idElementRechazo).addClass("border-secondary");
+    $("#" + idElementRechazo2).prop('checked', false);
+    $("#label_" + idElementRechazo2).removeClass("text-rechazed");
+    $("#div_" + idElementRechazo2).removeClass("border-danger");
+    $("#div_" + idElementRechazo2).addClass("border-secondary");
+    $("#btn_" + idElementRechazo2).show();
 });
 
-// });
+
 

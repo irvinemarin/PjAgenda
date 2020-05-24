@@ -53,7 +53,8 @@ public class AgendaServlet extends HttpServlet {
         } else {
             String option = request.getParameter("action");
             System.out.println(request.getParameter("action"));
-
+            String idUsuario = se.getAttribute("userId").toString();
+            String userName = se.getAttribute("userName").toString();
             switch (option) {
 
                 case "op00":
@@ -68,10 +69,20 @@ public class AgendaServlet extends HttpServlet {
                     List<Agenda> agendalist = new ArrayList<>();
 //                System.out.println(request.getParameter("Agenda"));
                     String dateSelected = request.getParameter("dateSelected");
-                    agendalist = AgendaDao.getInstance().getAgendas(dateSelected);
+                    agendalist = AgendaDao.getInstance().getParticipanteAgendas(dateSelected, idUsuario, userName);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("utf-8");
                     response.getWriter().write(new Gson().toJson(agendalist));
+
+                    break;
+                case "op01-2":
+                    List<Agenda> agendaInvitadoslist = new ArrayList<>();
+//                System.out.println(request.getParameter("Agenda"));
+                    String tabNumber = request.getParameter("tabNumber");
+                    agendaInvitadoslist = AgendaDao.getInstance().getAgendasTabs(tabNumber, idUsuario, userName);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf-8");
+                    response.getWriter().write(new Gson().toJson(agendaInvitadoslist));
 
                     break;
                 case "op02":
@@ -130,7 +141,7 @@ public class AgendaServlet extends HttpServlet {
                     response.setCharacterEncoding("utf-8");
                     Agenda agendaItem = new Gson().fromJson(request.getParameter("Agenda"), Agenda.class);
                     System.out.println(agendaItem.toString());
-                    int agendaSaved = AgendaDao.getInstance().addAgenda(agendaItem);
+                    int agendaSaved = AgendaDao.getInstance().addAgenda(agendaItem, request.getParameter("urlCalendarMeet"));
 
                     if (agendaSaved == 1) {
                         response.getWriter().write(new Gson().toJson("1"));
@@ -141,21 +152,36 @@ public class AgendaServlet extends HttpServlet {
 
                     break;
                 case "rech":
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("utf-8");
 
-                    ParticipanteAsiste asis = new Gson().fromJson(request.getParameter("asis"), ParticipanteAsiste.class);
+                    ParticipanteAsiste asis = new ParticipanteAsiste();
 
                     int userId = (int) se.getAttribute("userId");
 
+                    System.out.println("getParameter  n_agenda" + request.getParameter("n_agenda"));
+                    System.out.println("getParameter  n_ano" + request.getParameter("n_ano"));
+                    System.out.println("getParameter  n_rechazo" + request.getParameter("n_rechazo"));
+                    System.out.println("getParameter  x_rechazo" + request.getParameter("x_rechazo"));
+                    System.out.println("getParameter  userId" + userId);
+                    asis.setN_agenda(Integer.parseInt(request.getParameter("n_agenda")));
+                    asis.setN_ano(Integer.parseInt(request.getParameter("n_ano")));
+                    asis.setN_rechazo(Integer.parseInt(request.getParameter("n_rechazo")));
+                    asis.setX_rechazo(request.getParameter("x_rechazo"));
+
                     int agendaRechazed = AgendaDao.getInstance().rechAgenda(asis, userId);
 
+                    System.out.println("updateRechazo " + agendaRechazed);
+
                     if (agendaRechazed == 1) {
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf-8");
                         response.getWriter().write(new Gson().toJson("1"));
                     } else {
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("utf-8");
                         response.getWriter().write(new Gson().toJson("0"));
 
                     }
+                    break;
                 default:
                     RequestDispatcher dispatcher = getServletContext()
                             .getRequestDispatcher("/login.html");

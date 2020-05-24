@@ -15,6 +15,7 @@ public class Agenda {
 
     public String x_titulo;
     public String x_descripcion;
+    public String x_meet_url;
 
     public String f_inicio;
     public String f_fin;
@@ -29,6 +30,7 @@ public class Agenda {
     public String x_agenda_pad;
 
     public int n_tododia;
+    public int rechazoPersonal;
     public int n_sala_audiencia;
     public int n_tipo_audiencia;
     public int n_ubica_agenda;
@@ -52,6 +54,33 @@ public class Agenda {
     public String c_aud_mcaddr;
 
     List<ParticipanteAsiste> invitados;
+    List<ParticipanteAgenda> invitadosList;
+
+    public int getRechazoPersonal() {
+        return rechazoPersonal;
+    }
+
+    public void setRechazoPersonal(int rechazoPersonal) {
+        this.rechazoPersonal = rechazoPersonal;
+    }
+
+    
+    
+    public String getX_meet_url() {
+        return x_meet_url;
+    }
+
+    public void setX_meet_url(String x_meet_url) {
+        this.x_meet_url = x_meet_url;
+    }
+
+    public List<ParticipanteAgenda> getInvitadosList() {
+        return invitadosList;
+    }
+
+    public void setInvitadosList(List<ParticipanteAgenda> invitadosList) {
+        this.invitadosList = invitadosList;
+    }
 
     public String getX_agenda_pad() {
         return x_agenda_pad;
@@ -64,8 +93,6 @@ public class Agenda {
     public void setInvitados(List<ParticipanteAsiste> invitados) {
         this.invitados = invitados;
     }
-    
-    
 
     public void setX_agenda_pad(String x_agenda_pad) {
         this.x_agenda_pad = x_agenda_pad;
@@ -301,6 +328,11 @@ public class Agenda {
 
     public void setN_tipo_audiencia(int n_tipo_audiencia) {
         this.n_tipo_audiencia = n_tipo_audiencia;
+    }
+
+    @Override
+    public String toString() {
+        return "Agenda{" + "x_titulo=" + x_titulo + ", x_descripcion=" + x_descripcion + ", f_inicio=" + f_inicio + ", f_fin=" + f_fin + ", h_in=" + h_in + ", h_fin=" + h_fin + ", invitados=" + invitados + '}';
     }
 
 }

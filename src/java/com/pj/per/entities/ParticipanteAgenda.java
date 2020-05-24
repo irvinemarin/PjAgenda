@@ -49,8 +49,6 @@ public class ParticipanteAgenda {
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
-    
-    
 
     public int getN_persona() {
         return n_persona;
@@ -274,6 +272,11 @@ public class ParticipanteAgenda {
 
     public void setC_aud_mcaddr(String c_aud_mcaddr) {
         this.c_aud_mcaddr = c_aud_mcaddr;
+    }
+
+    @Override
+    public String toString() {
+        return "ParticipanteAgenda{" + "n_persona=" + n_persona + ", n_idtipodoc=" + n_idtipodoc + ", x_nombre=" + x_nombre + ", x_apellido_paterno=" + x_apellido_paterno + ", x_apellido_materno=" + x_apellido_materno + ", x_razon_social=" + x_razon_social + ", x_numero_doc=" + x_numero_doc + ", l_ind_sexo=" + l_ind_sexo + ", f_nacimiento=" + f_nacimiento + ", c_ubigeo_nac=" + c_ubigeo_nac + ", x_telefono=" + x_telefono + ", c_ubigeo_dom=" + c_ubigeo_dom + ", x_direccion=" + x_direccion + ", x_dato_padre=" + x_dato_padre + ", x_dato_madre=" + x_dato_madre + ", c_login=" + c_login + ", c_clave=" + c_clave + ", x_correo=" + x_correo + ", x_ip_acceso=" + x_ip_acceso + ", l_activo=" + l_activo + ", f_registro=" + f_registro + ", f_aud=" + f_aud + ", b_aud=" + b_aud + ", c_aud_uid=" + c_aud_uid + ", c_aud_uidred=" + c_aud_uidred + ", c_aud_pc=" + c_aud_pc + ", c_aud_ip=" + c_aud_ip + ", c_aud_mcaddr=" + c_aud_mcaddr + ", fullName=" + fullName + '}';
     }
 
 }

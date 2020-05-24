@@ -7,11 +7,8 @@
 /* global Materialize */
 
 $(document).ready(function () {
-    $('.modal').modal();
-    $('.modal').modal({
-        dismissible: false // Modal can be dismissed by clicking outside of the modal
-    });
-    $("#div_sistemasList").empty();
+
+
     $("#btnClear").on('click', function (e) {
         f_showToastMsj("Limpiando Datos");
         createCaptcha();
@@ -24,7 +21,6 @@ $(document).ready(function () {
     var code;
     var errors = 0;
     $("#btnSingIn").on("click", function () {
-
         validateCaptcha();
     });
     $("#btnReloadCodigo").on("click", function () {
@@ -48,7 +44,7 @@ $(document).ready(function () {
         }
         var canv = document.createElement("canvas");
         canv.id = "captcha";
-        canv.width = 100;
+        canv.width = 110;
         canv.height = 50;
         var ctx = canv.getContext("2d");
         ctx.font = "25px Georgia";
@@ -103,6 +99,7 @@ $(document).ready(function () {
                 error: function (data) {
 
                     f_showToastMsj('Error de Conexión!');
+                    f_clearInputs();
                 }
             });
         }
@@ -137,7 +134,11 @@ $(document).ready(function () {
 
     }
     function f_showToastMsj(msj) {
-        Materialize.toast(msj, 6000);
+        toastr.options = {
+            "timeOut": "5000",
+            "closeButton": true,
+        }
+        toastr['error'](msj, '', {positionClass: 'toast-bottom-center'});
     }
 });
 
