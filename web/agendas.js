@@ -46,7 +46,7 @@ $(document).ready(function () {
                     for (var i in rd) {
 
 
-                        if (rd[i].n_rechazo) {
+                        if (rd[i].rechazoPersonal) {
 
                         }
 
@@ -63,8 +63,8 @@ $(document).ready(function () {
                         htmlItem += '       <div class="panel-title"></div>';
                         htmlItem += '      <div class="panel-body ">';
 
-                        console.log("n_rechazo " + rd[i].n_rechazo)
-                        if (rd[i].n_rechazo != 1 || rd[i].n_rechazo != "1") {
+                        console.log("rechazoPersonal " + rd[i].rechazoPersonal)
+                        if (rd[i].rechazoPersonal != 1 || rd[i].rechazoPersonal != "1") {
                             htmlItem += '           <div class="custom-control custom-switch">';
                             htmlItem += '               <input type="checkbox" class="custom-control-input swichRechazar" id="customSwitch_' + i + '" \n\
                                                     data-nagenda="' + rd[i].n_agenda + '"\n\
@@ -144,7 +144,7 @@ $(document).ready(function () {
             n_agenda: n_agenda,
             n_ano: n_ano,
             //n_persona: 1,
-            n_rechazo: $(".swichRechazar").val() ? 1 : 0,
+            rechazoPersonal: $(".swichRechazar").val() ? 1 : 0,
             x_rechazo: $("#txtDescripcionRechazo").val()
         };
         $.ajax({
@@ -272,6 +272,7 @@ $(document).ready(function () {
                         var borderColor = "secondary";
                         if (tabNumber == 3) {
                             borderColor = "warning";
+                            
                         }
 
                         htmlItem += ' <div class="col-md-6 col-lg-4 ">';
@@ -286,8 +287,8 @@ $(document).ready(function () {
                         htmlItem += '       <div class="panel-title"></div>';
                         htmlItem += '      <div class="panel-body ">';
                         htmlItem += '          <span class="panel-text float-right">' + rd[i].f_inicio_real + '</span>';
-                        console.log("n_rechazo " + rd[i].n_rechazo)
-                        if (rd[i].n_rechazo != 1 || rd[i].n_rechazo != "1") {
+                        console.log("rechazoPersonal " + rd[i].rechazoPersonal)
+                        if (rd[i].rechazoPersonal != 1 || rd[i].rechazoPersonal != "1") {
                             htmlItem += '           <div class="custom-control custom-switch">';
                             htmlItem += '               <input type="checkbox" class="custom-control-input swichRechazar" id="customSwitch_' + i + '" \n\
                                                     data-nagenda="' + rd[i].n_agenda + '"\n\

@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class Conexion {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/segurity2";
+    private static final String URL = "jdbc:postgresql://localhost:5432/SecurityAgendas";
     private static final String DRIVER = "org.postgresql.Driver";
     private static final String USER = "postgres";
     private static final String PASS = "11111";

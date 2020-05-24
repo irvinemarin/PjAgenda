@@ -895,9 +895,9 @@ function getListaAgendas2(dateSelected) {
                     htmlItem += '      <div class="panel-body ">';
 
 
-                    console.log("n_rechazo " + rd[i].n_rechazo)
+                    console.log("rechazoPersonal " + rd[i].rechazoPersonal)
 
-                    if (rd[i].n_rechazo != 1 || rd[i].n_rechazo != "1") {
+                    if (rd[i].rechazoPersonal != 1 || rd[i].rechazoPersonal != "1") {
                         htmlItem += '           <div class="custom-control custom-switch">';
                         htmlItem += '               <input type="checkbox" class="custom-control-input swichRechazar" id="customSwitch_' + i + '" \n\
                                                     data-nagenda="' + rd[i].n_agenda + '"\n\
